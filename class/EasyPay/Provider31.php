@@ -4,6 +4,10 @@ class EasyPay_Provider31
 {
         protected static $log;
         
+        private $request = array();
+        
+        protected $operations = array('Check','Payment','Confirm','Cancel');
+        
         public function __construct($log_instance)
         {
                 self::$log = $log_instance;
@@ -82,22 +86,90 @@ class EasyPay_Provider31
                 if ($this->raw_request == NULL)
                 {
                         self::$log->error('The xml request from the HTTP request body was not received');
-                        throw new Exception('Error in request', 99);
+                        throw new Exception('Error in request', -99);
                 }
                 if (strlen($this->raw_request) == 0)
                 {
                         self::$log->error('An empty xml request');
-                        throw new Exception('Error in request', 99);
+                        throw new Exception('Error in request', -99);
                 }
                 
                 $doc = new DOMDocument();
                 $doc->loadXML($this->raw_request);
-                $t = $this->getNodes($doc, 'Transfer');
+                $r = $this->getNodes($doc, 'Request');
                 
-                if (count($t) != 1)
+                if (count($r) != 1)
                 {
-                        self::$log->error('В xml-запросе не один элемент Transfer!');
-                        throw new Exception('Error in request', 99);
+                        self::$log->error('There is more than one Request element in the xml-query!');
+                        throw new Exception('Error in request', -99);
+                }
+                
+                foreach ($r[0]->childNodes as $child)
+                {
+                        if ($child->nodeName == 'DateTime')
+                        {
+                                if ( ! isset($this->request['DateTime']))
+                                {
+                                        $this->request['DateTime'] = $child->nodeValue;
+                                }
+                                else
+                                {
+                                        self::$log->error('There is more than one DateTime element in the xml-query!');
+                                        throw new Exception('Error in request', -99);
+                                }
+                        }
+                        elseif ($child->nodeName == 'Sign')
+                        {
+                                if ( ! isset($this->request['Sign']))
+                                {
+                                        $this->request['Sign'] = $child->nodeValue;
+                                }
+                                else
+                                {
+                                        self::$log->error('There is more than one Sign element in the xml-query!');
+                                        throw new Exception('Error in request', -99);
+                                }
+                        }
+                        elseif (in_array($child->nodeName, $this->operations))
+                        {
+                                if ( ! isset($this->request['Operation']))
+                                {
+                                        $this->request['Operation'] = $child->nodeName;
+                                }
+                                
+                                $this->request[$child->nodeName] = array();
+                                $o = $child;
+                        }
+                }
+                var_dump($this);
+                
+                $this->validate_request();
+                
+                throw new Exception('to do', -77);
+        }
+        
+        /**
+         *   "Rough" validation of the received xml request
+         *   we are checking only the Request node
+         *
+         *   must contain child elements
+         */
+        private function validate_request()
+        {
+                if ( ! isset($this->request['DateTime']))
+                {
+                        Log::instance()->error('There is no DateTime element in the xml request!');
+                        throw new Exception('Error in request', -99);
+                }
+                if ( ! isset($this->request['Sign']))
+                {
+                        Log::instance()->error('There is no DateTime element in the xml request!');
+                        throw new Exception('Error in request', -99);
+                }
+                if ( ! isset($this->request['Operation']))
+                {
+                        Log::instance()->error('There is no Operation type element in the xml request!');
+                        throw new Exception('Error in request', -99);
                 }
         }
         
@@ -109,9 +181,34 @@ class EasyPay_Provider31
                 /**
                  *  Sending a response with an error code
                  */
-                echo $message;
+                
+                require_once('Provider31/Response.php');
+                require_once('Provider31/Response/ErrorInfo.php');
+                $errxml = new EasyPay_Provider31_Response_ErrorInfo($code, $message);
                 
                 return $errxml;
         }
-
+        
+        /**
+         *   Selects nodes by name
+         */
+        private function getNodes($dom, $name, $ret=array())
+        {
+                foreach($dom->childNodes as $child)
+                {
+                        if ($child->nodeName == $name)
+                        {
+                                array_push($ret, $child);
+                        }   
+                        else
+                        {
+                                if (count($child->childNodes) > 0)
+                                {
+                                        $ret = $this->getNodes($child, $name, $ret);
+                                }
+                        }
+                }
+                
+                return $ret;
+        }
 }
