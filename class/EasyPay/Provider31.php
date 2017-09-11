@@ -3,14 +3,18 @@
 class EasyPay_Provider31
 {
         protected static $log;
+        protected static $options = array(
+                'ServiceId' => 0,
+        );
         
         private $request = array();
         
         protected $operations = array('Check','Payment','Confirm','Cancel');
         
-        public function __construct($log_instance)
+        public function __construct(Log $log_instance, array $options)
         {
                 self::$log = $log_instance;
+                self::$options = array_merge(self::$options, $options);
         }
         
         public function process()
@@ -145,7 +149,36 @@ class EasyPay_Provider31
                 
                 $this->validate_request();
                 
-                throw new Exception('to do', -77);
+                $msg = 'Request Operation: ' . $this->request['Operation'];
+                self::$log->add($msg);
+                self::$log->debug($msg);
+                
+                switch ($this->request['Operation'])
+                {
+                        case 'Check':
+                                $this->parse_request_check($r[0]);
+                                $this->validate_request_check();
+                                
+                                $msg = sprintf("request parameters 1:%s",
+                                        $this->request['Check']['Account']
+                                );
+                                
+                                self::$log->add($msg);
+                                self::$log->debug($msg);
+                                
+                                break;
+                                
+                        case 'Payment':
+                                
+                        case 'Confirm':
+                                
+                        case 'Cancel';
+                                
+                        default:
+                                self::$log->error('There is not supported value of Operation in xml-request!');
+                                throw new Exception('Error in request', 99);
+                                break;
+                }
         }
         
         /**
@@ -158,17 +191,79 @@ class EasyPay_Provider31
         {
                 if ( ! isset($this->request['DateTime']))
                 {
-                        Log::instance()->error('There is no DateTime element in the xml request!');
+                        self::$log->error('There is no DateTime element in the xml request!');
                         throw new Exception('Error in request', -99);
                 }
                 if ( ! isset($this->request['Sign']))
                 {
-                        Log::instance()->error('There is no DateTime element in the xml request!');
+                        self::$log->error('There is no DateTime element in the xml request!');
                         throw new Exception('Error in request', -99);
                 }
                 if ( ! isset($this->request['Operation']))
                 {
-                        Log::instance()->error('There is no Operation type element in the xml request!');
+                        self::$log->error('There is no Operation type element in the xml request!');
+                        throw new Exception('Error in request', -99);
+                }
+        }
+        
+        /**
+         *   Parse xml-request type "Check"
+         */
+        private function parse_request_check($request)
+        {
+                foreach ($request->childNodes as $child)
+                {
+                        if ($child->nodeName == 'Check')
+                        {
+                                $data = $child;
+                                $this->request['Check'] = array();
+                     
+                                foreach ($data->childNodes as $child2)
+                                {
+                                        if ($child2->nodeName == 'ServiceId')
+                                         {
+                                                 if ( ! isset($this->request['Check']['ServiceId']))
+                                                 {
+                                                         $this->request['Check']['ServiceId'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one ServiceId element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                         elseif ($child2->nodeName == 'Account')
+                                         {
+                                                 if ( ! isset($this->request['Check']['Account']))
+                                                 {
+                                                         $this->request['Check']['Account'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one Account element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                }
+                        }
+                }
+        }
+        
+        /**
+         *   validation of the received xml request Check
+         *   check the Check node and the child nodes ServiceId and Account
+         *
+         */
+        private function validate_request_check()
+        {
+                if ( ! isset($this->request['Check']['ServiceId']))
+                {
+                        self::$log->error('There is no ServiceId element in the xml request!');
+                        throw new Exception('Error in request', -99);
+                }
+                if ( ! isset($this->request['Check']['Account']))
+                {
+                        self::$log->error('There is no Account element in the xml request!');
                         throw new Exception('Error in request', -99);
                 }
         }
