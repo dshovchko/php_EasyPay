@@ -266,6 +266,13 @@ class EasyPay_Provider31
                         self::$log->error('There is no Account element in the xml request!');
                         throw new Exception('Error in request', -99);
                 }
+                
+                // compare received value ServiceId with option ServiceId
+                if (intval(self::$options['ServiceId']) != intval($this->request['Check']['ServiceId']))
+                {
+                        self::$log->error('This request is not for our ServiceId!');
+                        throw new Exception('This request is not for us', -98);
+                }
         }
         
         /**
