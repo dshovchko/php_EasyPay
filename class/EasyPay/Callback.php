@@ -1,25 +1,9 @@
 <?php
 
-abstract class EasyPay_Callback
+interface EasyPay_Callback
 {
-        
-        function Check($account)
-        {
-                return null;
-        }
-        
-        function Payment($orderid, $account, $amount)
-        {
-                return null;
-        }
-        
-        function Confirm($paymentid)
-        {
-                return null;
-        }
-        
-        function Cancel($paymentid)
-        {
-                return null;
-        }
+        public function check($account);
+        public function payment($orderid, $account, $amount);
+        public function confirm($paymentid);
+        public function cancel($paymentid);
 }
