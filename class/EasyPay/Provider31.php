@@ -6,15 +6,17 @@ class EasyPay_Provider31
         protected static $options = array(
                 'ServiceId' => 0,
         );
+        protected static $cb;
         
         private $request = array();
         
         protected $operations = array('Check','Payment','Confirm','Cancel');
         
-        public function __construct(Log $log_instance, array $options)
+        public function __construct(Log $log_instance, array $options, EasyPay_Callback $cb)
         {
                 self::$log = $log_instance;
                 self::$options = array_merge(self::$options, $options);
+                self::$cb = $cb;
         }
         
         public function process()
@@ -145,7 +147,6 @@ class EasyPay_Provider31
                                 $o = $child;
                         }
                 }
-                var_dump($this);
                 
                 $this->validate_request();
                 
@@ -276,6 +277,50 @@ class EasyPay_Provider31
         }
         
         /**
+         *  Process request and generate response
+         *
+         */
+        private function get_response()
+        {
+                switch ($this->request['Operation'])
+                {
+                        case 'Check':
+                                
+                                return $this->response_check();
+                                break;
+                                
+                        case 'Payment':
+                                
+                        case 'Confirm':
+                                
+                        case 'Cancel';
+                                
+                        default:
+                                break;
+                }
+                
+                self::$log->error('There is not supported value of Operation in xml-request!');
+                throw new Exception('Error in request', 99);
+        }
+        
+        /**
+         *  Find the subscriber, check the possibility of replenishment and generate a response
+         *
+         */
+        private function response_check()
+        {
+                $accountinfo = self::$cb->check($this->request['Check']['Account']);
+                
+                /**
+                 *  Sending a response
+                 */
+                $xml = new EasyPay_Provider31_Response_Check($accountinfo);
+                
+                return $xml;
+        }
+
+        
+        /**
          *   Generates an xml with an error message
          */
         private function get_error_response($code, $message)
@@ -283,9 +328,6 @@ class EasyPay_Provider31
                 /**
                  *  Sending a response with an error code
                  */
-                
-                require_once('Provider31/Response.php');
-                require_once('Provider31/Response/ErrorInfo.php');
                 $errxml = new EasyPay_Provider31_Response_ErrorInfo($code, $message);
                 
                 return $errxml;
