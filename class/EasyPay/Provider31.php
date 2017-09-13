@@ -170,6 +170,8 @@ class EasyPay_Provider31
                                 break;
                                 
                         case 'Payment':
+                                $this->parse_request_payment($r[0]);
+                                
                                 
                         case 'Confirm':
                                 
@@ -242,6 +244,73 @@ class EasyPay_Provider31
                                                  else
                                                  {
                                                          self::$log->error('There is more than one Account element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                }
+                        }
+                }
+        }
+        
+        /**
+         *   Parse xml-request type "Payment"
+         */
+        private function parse_request_payment($request)
+        {
+                foreach ($request->childNodes as $child)
+                {
+                        if ($child->nodeName == 'Payment')
+                        {
+                                $data = $child;
+                                $this->request['Payment'] = array();
+                     
+                                foreach ($data->childNodes as $child2)
+                                {
+                                        if ($child2->nodeName == 'ServiceId')
+                                         {
+                                                 if ( ! isset($this->request['Check']['ServiceId']))
+                                                 {
+                                                         $this->request['Check']['ServiceId'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one ServiceId element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                         elseif ($child2->nodeName == 'Account')
+                                         {
+                                                 if ( ! isset($this->request['Check']['Account']))
+                                                 {
+                                                         $this->request['Check']['Account'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one Account element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                         elseif ($child2->nodeName == 'Amount')
+                                         {
+                                                 if ( ! isset($this->request['Check']['Amount']))
+                                                 {
+                                                         $this->request['Check']['Amount'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one Amount element in the xml-query!');
+                                                         throw new Exception('Error in request', -99);
+                                                 }
+                                         }
+                                         elseif ($child2->nodeName == 'OrderId')
+                                         {
+                                                 if ( ! isset($this->request['Check']['OrderId']))
+                                                 {
+                                                         $this->request['Check']['OrderId'] = $child2->nodeValue;
+                                                 }
+                                                 else
+                                                 {
+                                                         self::$log->error('There is more than one OrderId element in the xml-query!');
                                                          throw new Exception('Error in request', -99);
                                                  }
                                          }
