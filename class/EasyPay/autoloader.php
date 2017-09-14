@@ -2,12 +2,13 @@
 
 function __autoload_EasyPay($class_name) 
 {
-        if (substr($class_name, 0, 8) != 'EasyPay_')
+        if (substr($class_name, 0, 8) != 'EasyPay\\')
         {
                 return FALSE;
         }
-        $filename = str_replace('_', DIRECTORY_SEPARATOR, substr($class_name, 8));
-
+        
+        $filename = str_replace('\\', DIRECTORY_SEPARATOR, substr($class_name, 8));
+        
         $file = dirname(__FILE__).'/'.$filename.'.php';
 
         if ( ! file_exists($file))
