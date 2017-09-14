@@ -1,11 +1,12 @@
 <?php
 
-	/**
-	* @package EasyPay_Provider31
-	*/
-	final class EasyPay_Provider31_Response_Check extends EasyPay_Provider31_Response
+	namespace EasyPay\Provider31\Response;
+	
+	use EasyPay\Provider31 as Provider31;
+	
+	final class Check extends Provider31\Response
 	{
-		function __construct(EasyPay_Provider31_AccountInfo $accountinfo) {
+		function __construct(Provider31\AccountInfo $accountinfo) {
 			parent::__construct();
 			
 			$this->setElementValue('StatusCode', 0);

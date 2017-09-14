@@ -1,6 +1,8 @@
 <?php
 
-interface EasyPay_Callback
+namespace EasyPay;
+
+interface Callback
 {
         public function check($account);
         public function payment($orderid, $account, $amount);

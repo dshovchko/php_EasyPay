@@ -1,9 +1,10 @@
 <?php
 
-	/**
-	* @package EasyPay_Provider31
-	*/
-	final class EasyPay_Provider31_Response_ErrorInfo extends EasyPay_Provider31_Response
+	namespace EasyPay\Provider31\Response;
+	
+	use EasyPay\Provider31 as Provider31;
+	
+	final class ErrorInfo extends Provider31\Response
 	{
 		function __construct($code, $message) {
 			parent::__construct();
@@ -12,4 +13,3 @@
 			$this->setElementValue('StatusDetail', $message);
 		}
 	}
-?>

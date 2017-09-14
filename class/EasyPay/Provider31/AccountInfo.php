@@ -1,6 +1,8 @@
 <?php
 
-class EasyPay_Provider31_AccountInfo implements Iterator
+namespace EasyPay\Provider31;
+
+class AccountInfo implements \Iterator
 {
         private $_accountinfo;
         

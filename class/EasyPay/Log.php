@@ -1,5 +1,7 @@
 <?php
 
+namespace EasyPay;
+
 class Log {
     
     public static $DIR;
@@ -107,5 +109,4 @@ class Log {
         
 	mail(self::$EMAIL, '[x.doris.ua] Сообщение об ошибке', $msg, $headers);
     }
-    
 }

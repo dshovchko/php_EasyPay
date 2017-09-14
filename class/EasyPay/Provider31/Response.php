@@ -1,6 +1,8 @@
 <?php
 
-abstract class EasyPay_Provider31_Response extends DomDocument
+namespace EasyPay\Provider31;
+
+abstract class Response extends \DomDocument
 {
         const TEMPLATE = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime></DateTime></Response>';
         
