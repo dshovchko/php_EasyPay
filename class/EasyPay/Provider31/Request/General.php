@@ -93,9 +93,6 @@ class General
                                 {
                                         $this->Operation = $child->nodeName;
                                 }
-                                
-                                //$this->request[$child->nodeName] = array();
-                                //$o = $child;
                         }
                 }
         }
