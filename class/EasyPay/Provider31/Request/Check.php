@@ -40,36 +40,35 @@ class Check extends General
                         if ($child->nodeName == 'Check')
                         {
                                 $data = $child;
-                                $this->request['Check'] = array();
                      
                                 foreach ($data->childNodes as $child2)
                                 {
                                         if ($child2->nodeName == 'ServiceId')
-                                         {
-                                                 if ( ! isset($this->ServiceId))
-                                                 {
-                                                         $this->ServiceId = $child2->nodeValue;
-                                                 }
-                                                 else
-                                                 {
-                                                         Log::instance()->error('There is more than one ServiceId element in the xml-query!');
-                                                         throw new \Exception('Error in request', -99);
-                                                 }
-                                         }
-                                         elseif ($child2->nodeName == 'Account')
-                                         {
-                                                 if ( ! isset($this->Account))
-                                                 {
-                                                         $this->Account = $child2->nodeValue;
-                                                 }
-                                                 else
-                                                 {
-                                                         Log::instance()->error('There is more than one Account element in the xml-query!');
-                                                         throw new \Exception('Error in request', -99);
-                                                 }
-                                         }
-                                }
-                        }
+                                        {
+                                                if ( ! isset($this->ServiceId))
+                                                {
+                                                        $this->ServiceId = $child2->nodeValue;
+                                                }
+                                                else
+                                                {
+                                                        Log::instance()->error('There is more than one ServiceId element in the xml-query!');
+                                                        throw new \Exception('Error in request', -99);
+                                                }
+                                        }
+                                        elseif ($child2->nodeName == 'Account')
+                                        {
+                                                if ( ! isset($this->Account))
+                                                {
+                                                        $this->Account = $child2->nodeValue;
+                                                }
+                                                else
+                                                {
+                                                        Log::instance()->error('There is more than one Account element in the xml-query!');
+                                                        throw new \Exception('Error in request', -99);
+                                                }
+                                        }
+                               }
+                       }
                 }
         }
         
