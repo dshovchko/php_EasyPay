@@ -1,31 +1,64 @@
 <?php
 
+/**
+ *      Class for Check request
+ *
+ *      @package php_EasyPay
+ *      @version 1.0
+ *      @author Dmitry Shovchko <d.shovchko@gmail.com>
+ *
+ */
+
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
 
 class Check extends General
 {
+        /**
+         *      @var string 'ServiceId' node
+         */
         protected $ServiceId;
+        
+        /**
+         *      @var string 'Account' node
+         */
         protected $Account;
         
+        /**
+         *      Check constructor
+         *      
+         *      @param string $raw Raw request data
+         */
         public function __construct($raw)
         {
                 parent::__construct($raw);
         }
         
+        /**
+         *      Get ServiceId
+         *
+         *      @return string
+         */
         public function ServiceId()
         {
                 return $this->ServiceId;
         }
         
+        /**
+         *      Get Account
+         *
+         *      @return string
+         */
         public function Account()
         {
                 return $this->Account;
         }
         
         /**
-         *   Parse xml-request, which was previously "extracted" from the body of the http request
+         *      Parse xml-request, which was previously "extracted" from the body of the http request
+         *
+         *      @throws Exception
          */
         protected function parse_request_data()
         {
@@ -73,9 +106,9 @@ class Check extends General
         }
         
         /**
-         *   validation of the received xml request Check
-         *   check the Check node and the child nodes ServiceId and Account
+         *      "Rough" validation of the received xml request 
          *
+         *      @throws Exception
          */
         protected function validate_request()
         {

@@ -1,17 +1,45 @@
 <?php
 
+/**
+ *      General class for all request types
+ *
+ *      @package php_EasyPay
+ *      @version 1.0
+ *      @author Dmitry Shovchko <d.shovchko@gmail.com>
+ *
+ */
+
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
 
 class General
 {
+        /**
+         *      @var string 'DateTime' node
+         */
         protected $DateTime;
+        
+        /**
+         *      @var string 'Sign' node
+         */
         protected $Sign;
+        
+        /**
+         *      @var string 'Operation' type
+         */
         protected $Operation;
         
+        /**
+         *      @var array list of possible operations
+         */
         protected $operations = array('Check','Payment','Confirm','Cancel');
         
+        /**
+         *      General constructor
+         *      
+         *      @param string $raw Raw request data
+         */
         public function __construct($raw)
         {
                 $this->raw_request = $raw;
@@ -20,23 +48,40 @@ class General
                 $this->validate_request();
         }
         
+        /**
+         *      Get DateTime
+         *
+         *      @return string
+         */
         public function DateTime()
         {
                 return $this->DateTime;
         }
         
+        /**
+         *      Get Sign
+         *
+         *      @return string
+         */
         public function Sign()
         {
                 return $this->Sign;
         }
         
+        /**
+         *      Get Operation type
+         *
+         *      @return string
+         */
         public function Operation()
         {
                 return $this->Operation;
         }
         
         /**
-         *   Parse xml-request, which was previously "extracted" from the body of the http request
+         *      Parse xml-request, which was previously "extracted" from the body of the http request
+         *
+         *      @throws Exception
          */
         protected function parse_request_data()
         {
@@ -98,10 +143,9 @@ class General
         }
         
         /**
-         *   "Rough" validation of the received xml request
-         *   we are checking only the Request node
+         *      "Rough" validation of the received xml request 
          *
-         *   must contain child elements
+         *      @throws Exception
          */
         protected function validate_request()
         {
@@ -123,7 +167,13 @@ class General
         }
         
         /**
-         *   Selects nodes by name
+         *      Selects nodes by name
+         *
+         *      @param DOMDocument $dom
+         *      @param string $name
+         *      @param array $ret
+         *
+         *      @return array nodes with the name 
          */
         protected function getNodes($dom, $name, $ret=array())
         {

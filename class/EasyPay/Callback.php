@@ -1,5 +1,14 @@
 <?php
 
+/**
+ *      Interface for callback class
+ *
+ *      @package php_EasyPay
+ *      @version 1.0
+ *      @author Dmitry Shovchko <d.shovchko@gmail.com>
+ *
+ */
+
 namespace EasyPay;
 
 interface Callback

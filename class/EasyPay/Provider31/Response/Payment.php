@@ -1,11 +1,25 @@
 <?php
 
+/**
+ *      Class for response to Payment request
+ *
+ *      @package php_EasyPay
+ *      @version 1.0
+ *      @author Dmitry Shovchko <d.shovchko@gmail.com>
+ *
+ */
+
 namespace EasyPay\Provider31\Response;
 
 use \EasyPay\Provider31\Response as Response;
 
 final class Payment extends Response
 {
+	/**
+         *      Payment constructor
+         *
+         *      @param string $paymentid
+         */
 	function __construct($paymentid) {
 		parent::__construct();
 		
@@ -15,6 +29,11 @@ final class Payment extends Response
 		$this->create_PaymentId($paymentid);
 	}
 	
+	/**
+         *      Create PaymentId node
+         *
+         *      @param string $paymentid
+         */
 	public function create_PaymentId($paymentid)
 	{
 		$this->PaymentId = self::createElement('PaymentId', $paymentid);
