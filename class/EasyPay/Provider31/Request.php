@@ -41,6 +41,9 @@ final class Request
                                 
                         case 'Confirm':
                                 
+                                return new Request\Confirm($raw);
+                                break;
+                                
                         case 'Cancel';
                                 
                         default:
