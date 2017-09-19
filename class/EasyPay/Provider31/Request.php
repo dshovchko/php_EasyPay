@@ -46,6 +46,9 @@ final class Request
                                 
                         case 'Cancel';
                                 
+                                return new Request\Cancel($raw);
+                                break;
+                                
                         default:
                                 Log::instance()->error('There is not supported value of Operation in xml-request!');
                                 throw new \Exception('Error in request', 99);
