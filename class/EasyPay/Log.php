@@ -85,7 +85,7 @@ class Log {
         {
                 if (self::$DEBUG === TRUE)
                 {
-                        $this->_debugs[] = 'start debugging at' . strftime('%d.%m.%Y %H:%M:%S ') . PHP_EOL;
+                        $this->_debugs[] = PHP_EOL . 'start debugging at ' . strftime('%d.%m.%Y %H:%M:%S ') . PHP_EOL;
                 }
         }
         /**
@@ -143,7 +143,7 @@ class Log {
         {
                 if (self::$DEBUG === TRUE)
                 {
-                        $this->_debugs[] = 'end of debugging at' . strftime('%d.%m.%Y %H:%M:%S ') . PHP_EOL . PHP_EOL;
+                        $this->_debugs[] = 'end of debugging at ' . strftime('%d.%m.%Y %H:%M:%S ') . PHP_EOL . PHP_EOL;
                 }
                 
                 if (!empty($this->_messages))
