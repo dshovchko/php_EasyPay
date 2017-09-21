@@ -51,9 +51,13 @@ class Provider31
         {
                 try
                 {
+                        //      get request
                         $this->request = Provider31\Request::get();
-                        $this->validate_request();
                         
+                        //      validate request
+                        $this->request->validate_request(self::$options);
+                        
+                        //      get response
                         $this->raw_response = $this->get_response()->friendly();
                         
                         Log::instance()->add('the request was processed successfully');
@@ -87,21 +91,7 @@ class Provider31
                 $xml->preserveWhitespace = false;
                 $xml->loadXML($this->raw_response);
                 
-                $this->formated_response = $xml->saveXML();
-        }
-        
-        /**
-         *      validation of the received request
-         *
-         */
-        private function validate_request()
-        {
-                // compare received value ServiceId with option ServiceId
-                if (intval(self::$options['ServiceId']) != intval($this->request->ServiceId()))
-                {
-                        Log::instance()->error('This request is not for our ServiceId!');
-                        throw new \Exception('This request is not for us', -98);
-                }
+                $this->formated_response = $xml->saveXML($xml, LIBXML_NOEMPTYTAG);
         }
         
         /**
@@ -124,7 +114,13 @@ class Provider31
                                 
                         case 'Confirm':
                                 
+                                return $this->response_confirm();
+                                break;
+                        
                         case 'Cancel';
+                                
+                                return $this->response_cancel();
+                                break;
                                 
                         default:
                                 break;
@@ -167,7 +163,40 @@ class Provider31
                 
                 return $xml;
         }
-
+        
+        /**
+         *      run confirm callback and generate a response
+         *
+         *      @return string
+         */
+        private function response_confirm()
+        {
+                $orderdate = self::$cb->confirm(
+                        $this->request->PaymentId()
+                );
+                
+                // Sending a response
+                $xml = new Provider31\Response\Confirm($orderdate);
+                
+                return $xml;
+        }
+        
+        /**
+         *      run cancel callback and generate a response
+         *
+         *      @return string
+         */
+        private function response_cancel()
+        {
+                $canceldate = self::$cb->cancel(
+                        $this->request->PaymentId()
+                );
+                
+                // Sending a response
+                $xml = new Provider31\Response\Cancel($canceldate);
+                
+                return $xml;
+        }
         
         /**
          *      Generates an xml with an error message
