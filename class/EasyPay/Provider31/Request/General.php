@@ -31,6 +31,11 @@ class General
         protected $Operation;
         
         /**
+         *      @var string 'ServiceId' node
+         */
+        protected $ServiceId;
+        
+        /**
          *      @var array list of possible operations
          */
         protected $operations = array('Check','Payment','Confirm','Cancel');
@@ -45,7 +50,6 @@ class General
                 $this->raw_request = $raw;
                 
                 $this->parse_request_data();
-                $this->validate_request();
         }
         
         /**
@@ -79,6 +83,16 @@ class General
         }
         
         /**
+         *      Get ServiceId
+         *
+         *      @return string
+         */
+        public function ServiceId()
+        {
+                return $this->ServiceId;
+        }
+        
+        /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
          *      @throws Exception
@@ -98,6 +112,8 @@ class General
                 
                 $doc = new \DOMDocument();
                 $doc->loadXML($this->raw_request);
+                
+                // process <Request> group
                 $r = $this->getNodes($doc, 'Request');
                 
                 if (count($r) != 1)
@@ -110,27 +126,11 @@ class General
                 {
                         if ($child->nodeName == 'DateTime')
                         {
-                                if ( ! isset($this->DateTime))
-                                {
-                                        $this->DateTime = $child->nodeValue;
-                                }
-                                else
-                                {
-                                        Log::instance()->error('There is more than one DateTime element in the xml-query!');
-                                        throw new \Exception('Error in request', -99);
-                                }
+                                $this->parse_request_node($child, 'DateTime');
                         }
                         elseif ($child->nodeName == 'Sign')
                         {
-                                if ( ! isset($this->Sign))
-                                {
-                                        $this->Sign = $child->nodeValue;
-                                }
-                                else
-                                {
-                                        Log::instance()->error('There is more than one Sign element in the xml-query!');
-                                        throw new \Exception('Error in request', -99);
-                                }
+                                $this->parse_request_node($child, 'Sign');
                         }
                         elseif (in_array($child->nodeName, $this->operations))
                         {
@@ -138,16 +138,60 @@ class General
                                 {
                                         $this->Operation = $child->nodeName;
                                 }
+                                else
+                                {
+                                        Log::instance()->error('There is more than one Operation type element in the xml-query!');
+                                        throw new \Exception('Error in request', -99);
+                                }
                         }
+                }
+                
+                if ( ! isset($this->Operation))
+                {
+                        Log::instance()->error('There is no Operation type element in the xml request!');
+                        throw new \Exception('Error in request', -99);
+                }
+                
+                // process <Operation> group
+                $r = $this->getNodes($doc, $this->Operation);
+                
+                foreach ($r[0]->childNodes as $child)
+                {
+                        if ($child->nodeName == 'ServiceId')
+                        {
+                                $this->parse_request_node($child, 'ServiceId');
+                        }
+                }
+        }
+        
+        /**
+         *      Parse node of request
+         *
+         *      @param DOMNode $n
+         *      @param string $name
+         *
+         *      @throws Exception
+         */
+        protected function parse_request_node($n, $name)
+        {
+                if ( ! isset($this->$name))
+                {
+                        $this->$name = $n->nodeValue;
+                }
+                else
+                {
+                        Log::instance()->error('There is more than one '.$name.' element in the xml-query!');
+                        throw new \Exception('Error in request', -99);
                 }
         }
         
         /**
          *      "Rough" validation of the received xml request 
          *
+         *      @param array $options
          *      @throws Exception
          */
-        protected function validate_request()
+        public function validate_request($options)
         {
                 if ( ! isset($this->DateTime))
                 {
@@ -163,6 +207,18 @@ class General
                 {
                         Log::instance()->error('There is no Operation type element in the xml request!');
                         throw new \Exception('Error in request', -99);
+                }
+                if ( ! isset($this->ServiceId))
+                {
+                        Log::instance()->error('There is no ServiceId element in the xml request!');
+                        throw new \Exception('Error in request', -99);
+                }
+                
+                // compare received value ServiceId with option ServiceId
+                if (intval($options['ServiceId']) != intval($this->ServiceId))
+                {
+                        Log::instance()->error('This request is not for our ServiceId!');
+                        throw new \Exception('This request is not for us', -98);
                 }
         }
         

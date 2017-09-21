@@ -16,11 +16,6 @@ use EasyPay\Log as Log;
 class Check extends General
 {
         /**
-         *      @var string 'ServiceId' node
-         */
-        protected $ServiceId;
-        
-        /**
          *      @var string 'Account' node
          */
         protected $Account;
@@ -33,16 +28,6 @@ class Check extends General
         public function __construct($raw)
         {
                 parent::__construct($raw);
-        }
-        
-        /**
-         *      Get ServiceId
-         *
-         *      @return string
-         */
-        public function ServiceId()
-        {
-                return $this->ServiceId;
         }
         
         /**
@@ -66,59 +51,27 @@ class Check extends General
                 
                 $doc = new \DOMDocument();
                 $doc->loadXML($this->raw_request);
-                $r = $this->getNodes($doc, 'Request');
+                $r = $this->getNodes($doc, 'Check');
                 
                 foreach ($r[0]->childNodes as $child)
                 {
-                        if ($child->nodeName == 'Check')
+                        if ($child->nodeName == 'Account')
                         {
-                                $data = $child;
-                     
-                                foreach ($data->childNodes as $child2)
-                                {
-                                        if ($child2->nodeName == 'ServiceId')
-                                        {
-                                                if ( ! isset($this->ServiceId))
-                                                {
-                                                        $this->ServiceId = $child2->nodeValue;
-                                                }
-                                                else
-                                                {
-                                                        Log::instance()->error('There is more than one ServiceId element in the xml-query!');
-                                                        throw new \Exception('Error in request', -99);
-                                                }
-                                        }
-                                        elseif ($child2->nodeName == 'Account')
-                                        {
-                                                if ( ! isset($this->Account))
-                                                {
-                                                        $this->Account = $child2->nodeValue;
-                                                }
-                                                else
-                                                {
-                                                        Log::instance()->error('There is more than one Account element in the xml-query!');
-                                                        throw new \Exception('Error in request', -99);
-                                                }
-                                        }
-                               }
-                       }
+                                $this->parse_request_node($child, 'Account');
+                        }
                 }
         }
         
         /**
-         *      "Rough" validation of the received xml request 
+         *      validate Check request
          *
+         *      @param array $options
          *      @throws Exception
          */
-        protected function validate_request()
+        public function validate_request($options)
         {
-                parent::validate_request();
+                parent::validate_request($options);
                 
-                if ( ! isset($this->ServiceId))
-                {
-                        Log::instance()->error('There is no ServiceId element in the xml request!');
-                        throw new \Exception('Error in request', -99);
-                }
                 if ( ! isset($this->Account))
                 {
                         Log::instance()->error('There is no Account element in the xml request!');
