@@ -19,6 +19,9 @@ class Provider31
          */
         protected static $options = array(
                 'ServiceId' => 0,
+                'UseSign' => false,
+                'EasySoftPKey' => '',
+                'ProviderPKey' => '',
         );
         /**
          *      @var Callback
@@ -56,42 +59,27 @@ class Provider31
                         
                         //      validate request
                         $this->request->validate_request(self::$options);
+                        Log::instance()->debug('request is valid');
+                        
+                        //      verify sign
+                        $this->request->verify_sign(self::$options);
+                        Log::instance()->debug('signature of request is correct');
                         
                         //      get response
-                        $this->raw_response = $this->get_response()->friendly();
+                        $this->response = $this->get_response();
                         
                         Log::instance()->add('the request was processed successfully');
                 }
                 catch (\Exception $e)
                 {
+                        //      get error response
                         $this->raw_response = $this->get_error_response($e->getCode(), $e->getMessage())->friendly();
                         
                         Log::instance()->add('the request was processed with an error');
                 }
-                
-                $this->format_response();
-                
-                Log::instance()->debug('response sends: ');
-                Log::instance()->debug($this->formated_response);
-                
-                ob_clean();
-                header("Content-Type: text/xml; charset=utf-8");
-                echo $this->formated_response;
+                //      output response
+                $this->response->out(self::$options);
                 exit;
-        }
-        
-        /**
-         *      Format a nice xml output
-         *
-         */
-        private function format_response()
-        {
-                $xml = new \DomDocument();
-                $xml->formatOutput = true;
-                $xml->preserveWhitespace = false;
-                $xml->loadXML($this->raw_response);
-                
-                $this->formated_response = $xml->saveXML($xml, LIBXML_NOEMPTYTAG);
         }
         
         /**
