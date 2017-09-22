@@ -230,7 +230,7 @@ class General
          */
         public function verify_sign($options)
         {
-                if ( ! file_exists($options['PKey']))
+                if ( ! file_exists($options['EasySoftPKey']))
                 {
                         Log::instance()->error('The file with the public key EasyPay was not find!');
                         throw new \Exception('Error while processing request', -97);
@@ -238,7 +238,7 @@ class General
                 
                 // this code is written according to the easysoft example
 
-                $fpkey = fopen($options['PKey'], "rb");
+                $fpkey = fopen($options['EasySoftPKey'], "rb");
                 if ($fpkey === FALSE)
                 {
                         Log::instance()->error('The file with the public key EasyPay was not open!');
@@ -252,7 +252,6 @@ class General
                 }
                 fclose($fpkey);
                 
-                //$pub_key = openssl_get_publickey($pkeyid);
                 $pub_key = openssl_pkey_get_public($pkeyid);
                 if ($pub_key === FALSE)
                 {
