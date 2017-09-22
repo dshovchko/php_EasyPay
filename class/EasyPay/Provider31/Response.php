@@ -11,6 +11,8 @@
 
 namespace EasyPay\Provider31;
 
+use EasyPay\Log as Log;
+
 abstract class Response extends \DomDocument
 {
         /**
@@ -80,8 +82,80 @@ abstract class Response extends \DomDocument
         function friendly()
         {
                 $this->encoding = 'UTF-8';
+                $this->formatOutput = true;
                 //$this->save('/tmp/test1.xml');
 
                 return $this->saveXML(NULL, LIBXML_NOEMPTYTAG);
+        }
+        
+        /**
+         *      Send response
+         *
+         *      @param array $options
+         */
+        function out($options)
+        {
+                if ($options['UseSign'] === true)
+                {
+                        $this->Sign = self::createElement('Sign');
+                        $this->Response->appendChild($this->Sign);
+                        
+                        $sign = $this->generate_sign($options);
+                        
+                        $this->Sign->nodeValue = $sign;
+                }
+                
+                Log::instance()->debug('response sends: ');
+                Log::instance()->debug($this->friendly());
+                
+                ob_clean();
+                header("Content-Type: text/xml; charset=utf-8");
+                echo $this->friendly();
+                exit;
+        }
+        
+        /**
+         *      Generate signature of response
+         *
+         *      @param array $options
+         *      @return string
+         */
+        function generate_sign($options)
+        {
+                if ( ! file_exists($options['ProviderPKey']))
+                {
+                        Log::instance()->error('The file with the public key Provider was not find!');
+                        return null;
+                }
+                
+                // this code is written according to the easysoft example
+
+                $fpkey = fopen($options['ProviderPKey'], "rb");
+                if ($fpkey === FALSE)
+                {
+                        Log::instance()->error('The file with the public key Provider was not open!');
+                        return null;
+                }
+                $pkeyid = fread($fpkey, 8192);
+                if ($pkeyid === FALSE)
+                {
+                        Log::instance()->error('The file with the public key Provider was not read!');
+                        return null;
+                }
+                fclose($fpkey);
+                
+                $pr_key = openssl_pkey_get_private($pkeyid);
+                if ($pub_key === FALSE)
+                {
+                        Log::instance()->error('Can not extract the private key from certificate!');
+                        return null;
+                }
+                if (openssl_sign($this->friendly(), $sign, $pr_key) === FALSE)
+                {
+                        Log::instance()->error('Can not generate signature!');
+                        return null;
+                }
+                
+                return strtoupper(bin2hex($sign));
         }
 }
