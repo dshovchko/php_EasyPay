@@ -223,6 +223,58 @@ class General
         }
         
         /**
+         *      Verify signature of request
+         *
+         *      @param array $options
+         *      @throws Exception
+         */
+        public function verify_sign($options)
+        {
+                if ( ! file_exists($options['PKey']))
+                {
+                        Log::instance()->error('The file with the public key EasyPay was not find!');
+                        throw new \Exception('Error while processing request', -97);
+                }
+                
+                // this code is written according to the easysoft example
+
+                $fpkey = fopen($options['PKey'], "rb");
+                if ($fpkey === FALSE)
+                {
+                        Log::instance()->error('The file with the public key EasyPay was not open!');
+                        throw new \Exception('Error while processing request', -97);
+                }
+                $pkeyid = fread($fpkey, 8192);
+                if ($pkeyid === FALSE)
+                {
+                        Log::instance()->error('The file with the public key EasyPay was not read!');
+                        throw new \Exception('Error while processing request', -97);
+                }
+                fclose($fpkey);
+                
+                //$pub_key = openssl_get_publickey($pkeyid);
+                $pub_key = openssl_pkey_get_public($pkeyid);
+                if ($pub_key === FALSE)
+                {
+                        Log::instance()->error('Can not extract the public key from certificate!');
+                        throw new \Exception('Error while processing request', -97);
+                }
+                $bin_sign = pack("H*", $this->Sign);
+                $xml = str_replace($this->Sign, '', $this->raw_request);
+                $check = openssl_verify($xml, $bin_sign, $pub_key);
+                if ($check == -1)
+                {
+                        Log::instance()->error('Error verify signature of request!');
+                        throw new \Exception('Error while processing request', -96);
+                }
+                elseif ($check == 0)
+                {
+                        Log::instance()->error('Signature of request is incorrect!');
+                        throw new \Exception('Error while processing request', -95);
+                }
+        }
+        
+        /**
          *      Selects nodes by name
          *
          *      @param DOMDocument $dom
