@@ -111,6 +111,7 @@ class Log {
         public function add($message)
         {
                 $this->_messages[] = strftime('%d.%m.%Y %H:%M:%S ') . $message . PHP_EOL;
+                $this->debug($message);
         }
 
         /**
@@ -122,6 +123,7 @@ class Log {
         public function error($message)
         {
                 $this->_errors[] = strftime('%d.%m.%Y %H:%M:%S ') . $message . PHP_EOL;
+                $this->debug('ERROR: '.$message);
         }
 
         /**
@@ -132,7 +134,10 @@ class Log {
          */
         public function debug($message)
         {
-                $this->_debugs[] = $message . PHP_EOL;
+                if (self::$DEBUG === TRUE)
+                {
+                        $this->_debugs[] = $message . PHP_EOL;
+                }
         }
 
         /**

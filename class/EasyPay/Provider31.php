@@ -124,6 +124,8 @@ class Provider31
          */
         private function response_check()
         {
+                Log::instance()->add(sprintf('Check("%s")', $this->request->Account()));
+                
                 $accountinfo = self::$cb->check(
                         $this->request->Account()
                 );
@@ -139,6 +141,8 @@ class Provider31
          */
         private function response_payment()
         {
+                Log::instance()->add(sprintf('Payment("%s", "%s", "%s")', $this->request->Account(), $this->request->OrderId(), $this->request->Amount()));
+                
                 $paymentid = self::$cb->payment(
                         $this->request->Account(),
                         $this->request->OrderId(),
@@ -156,6 +160,8 @@ class Provider31
          */
         private function response_confirm()
         {
+                Log::instance()->add(sprintf('Confirm("%s")', $this->request->PaymentId()));
+                
                 $orderdate = self::$cb->confirm(
                         $this->request->PaymentId()
                 );
@@ -171,6 +177,8 @@ class Provider31
          */
         private function response_cancel()
         {
+                Log::instance()->add(sprintf('Cancel("%s")', $this->request->PaymentId()));
+                
                 $canceldate = self::$cb->cancel(
                         $this->request->PaymentId()
                 );

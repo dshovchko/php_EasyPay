@@ -71,6 +71,8 @@ final class Request
          */
         private static function get_http_raw_post_data()
         {
+                Log::instance()->add('request from ' . $_SERVER['REMOTE_ADDR']);
+                
                 $raw_request = file_get_contents('php://input');
                 
                 Log::instance()->debug('request received: ');
