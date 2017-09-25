@@ -9,7 +9,6 @@
  *
  */
 
-
 namespace EasyPay;
 
 class Provider31
@@ -73,7 +72,7 @@ class Provider31
                 catch (\Exception $e)
                 {
                         //      get error response
-                        $this->raw_response = $this->get_error_response($e->getCode(), $e->getMessage())->friendly();
+                        $this->response = $this->get_error_response($e->getCode(), $e->getMessage());
                         
                         Log::instance()->add('the request was processed with an error');
                 }
@@ -125,12 +124,12 @@ class Provider31
          */
         private function response_check()
         {
-                $accountinfo = self::$cb->check($this->request->Account());
+                $accountinfo = self::$cb->check(
+                        $this->request->Account()
+                );
                 
                 // Sending a response
-                $xml = new Provider31\Response\Check($accountinfo);
-                
-                return $xml;
+                return new Provider31\Response\Check($accountinfo);
         }
         
         /**
@@ -147,9 +146,7 @@ class Provider31
                 );
                 
                 // Sending a response
-                $xml = new Provider31\Response\Payment($paymentid);
-                
-                return $xml;
+                return new Provider31\Response\Payment($paymentid);
         }
         
         /**
@@ -164,9 +161,7 @@ class Provider31
                 );
                 
                 // Sending a response
-                $xml = new Provider31\Response\Confirm($orderdate);
-                
-                return $xml;
+                return new Provider31\Response\Confirm($orderdate);
         }
         
         /**
@@ -181,9 +176,7 @@ class Provider31
                 );
                 
                 // Sending a response
-                $xml = new Provider31\Response\Cancel($canceldate);
-                
-                return $xml;
+                return new Provider31\Response\Cancel($canceldate);
         }
         
         /**
@@ -197,8 +190,6 @@ class Provider31
         private function get_error_response($code, $message)
         {
                 // Sending a response
-                $errxml = new Provider31\Response\ErrorInfo($code, $message);
-                
-                return $errxml;
+                return new Provider31\Response\ErrorInfo($code, $message);
         }
 }
