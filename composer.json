@@ -1,8 +1,9 @@
 {
     "name": "dshovchko/php_easypay",
-    "description": "Library for the implementation of payment gateway easypay.ua",
+    "description": "Library for the implementation of payment gateway of easypay.ua",
     "keywords": ["easypay", "easypay.ua"],
     "homepage": "https://github.com/dshovchko/php_EasyPay",
+    "license": "MIT",
     "authors": [
         {
             "name": "Dmitry Shovchko",
