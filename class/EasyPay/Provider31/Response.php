@@ -145,7 +145,7 @@ abstract class Response extends \DomDocument
                 fclose($fpkey);
                 
                 $pr_key = openssl_pkey_get_private($pkeyid);
-                if ($pub_key === FALSE)
+                if ($pr_key === FALSE)
                 {
                         Log::instance()->error('Can not extract the private key from certificate!');
                         return null;
