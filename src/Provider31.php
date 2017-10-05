@@ -39,10 +39,12 @@ class Provider31
          *      @param Callback $cb
          *
          */
-        public function __construct(array $options, Callback $cb)
+        public function __construct(array $options, Callback $cb, \Debulog\LoggerInterface $log)
         {
                 self::$options = array_merge(self::$options, $options);
                 self::$cb = $cb;
+                
+                Log::set($log);
         }
         
         /**
