@@ -15,7 +15,8 @@
         "source": "https://github.com/dshovchko/php_EasyPay"
     },
     "require": {
-        "php": ">=5.5.27"
+        "php": ">=5.5.27",
+        "dshovchko/debulog": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"
