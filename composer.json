@@ -1,4 +1,5 @@
 {
+"minimum-stability": "dev",
     "name": "dshovchko/php_easypay",
     "description": "Library for the implementation of payment gateway of easypay.ua",
     "keywords": ["easypay", "easypay.ua"],
@@ -24,6 +25,11 @@
     "autoload": {
         "psr-4": {
             "EasyPay\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EasyPayTest\\": "test/"
         }
     }
 }
