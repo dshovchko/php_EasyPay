@@ -122,6 +122,11 @@ abstract class Response extends \DomDocument
          */
         function generate_sign($options)
         {
+                if ( ! isset($options['ProviderPKey']))
+                {
+                        Log::instance()->error('The parameter ProviderPKey is not set!');
+                        return null;
+                }
                 if ( ! file_exists($options['ProviderPKey']))
                 {
                         Log::instance()->error('The file with the public key Provider was not find!');
@@ -129,7 +134,7 @@ abstract class Response extends \DomDocument
                 }
                 
                 // this code is written according to the easysoft example
-
+                
                 $fpkey = fopen($options['ProviderPKey'], "rb");
                 if ($fpkey === FALSE)
                 {
