@@ -25,7 +25,7 @@ abstract class Response extends \DomDocument
          *      Response constructor
          *      
          */
-        function __construct()
+        public function __construct()
         {
                 parent::__construct('1.0', 'UTF-8');
 
@@ -41,7 +41,7 @@ abstract class Response extends \DomDocument
          *      @param string $name
          *      @param string $value (optional)
          */
-        function createElement($name, $value=NULL)
+        public function createElement($name, $value=NULL)
         {
                 return parent::createElement($name, $value);
         }
@@ -52,7 +52,7 @@ abstract class Response extends \DomDocument
          *      @param string $name
          *      @param string $value
          */
-        function create_attr($name, $value)
+        public function create_attr($name, $value)
         {
                 return new DOMAttr($name, $value);
         }
@@ -63,7 +63,7 @@ abstract class Response extends \DomDocument
          *      @param string $name
          *      @param string $value
          */
-        function setElementValue($name, $value)
+        public function setElementValue($name, $value)
         {
                 foreach ($this->Response->childNodes as $child)
                 {
@@ -79,7 +79,7 @@ abstract class Response extends \DomDocument
          *
          *      @return string XML
          */
-        function friendly()
+        public function friendly()
         {
                 $this->encoding = 'UTF-8';
                 $this->formatOutput = true;
@@ -93,17 +93,9 @@ abstract class Response extends \DomDocument
          *
          *      @param array $options
          */
-        function out($options)
+        public function out($options)
         {
-                if ($options['UseSign'] === true)
-                {
-                        $this->Sign = self::createElement('Sign');
-                        $this->Response->appendChild($this->Sign);
-                        
-                        $sign = $this->generate_sign($options);
-                        
-                        $this->Sign->nodeValue = $sign;
-                }
+                $this->sign($options);
                 
                 Log::instance()->debug('response sends: ');
                 Log::instance()->debug($this->friendly());
@@ -115,12 +107,32 @@ abstract class Response extends \DomDocument
         }
         
         /**
+         *      Add Sign (if hasn't yet done)
+         *
+         *      @param array $options
+         */
+        protected function sign($options)
+        {
+                if (isset($this->Sign)) return;
+                
+                if (isset($options['UseSign']) && ($options['UseSign'] === true))
+                {
+                        $this->Sign = self::createElement('Sign');
+                        $this->Response->appendChild($this->Sign);
+                        
+                        $sign = $this->generate_sign($options);
+                        
+                        $this->Sign->nodeValue = $sign;
+                }
+        }
+        
+        /**
          *      Generate signature of response
          *
          *      @param array $options
          *      @return string
          */
-        function generate_sign($options)
+        public function generate_sign($options)
         {
                 if ( ! isset($options['ProviderPKey']))
                 {
