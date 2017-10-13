@@ -36,6 +36,8 @@ final class Payment extends Response
          */
 	public function create_PaymentId($paymentid)
 	{
+		if (isset($this->PaymentId)) return;
+		
 		$this->PaymentId = self::createElement('PaymentId', $paymentid);
 		$this->Response->appendChild($this->PaymentId);
 	}
