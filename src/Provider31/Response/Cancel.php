@@ -36,6 +36,8 @@ final class Cancel extends Response
          */
 	public function create_CancelDate($canceldate)
 	{
+		if (isset($this->CancelDate)) return;
+		
 		$this->CancelDate = self::createElement('CancelDate', $canceldate);
 		$this->Response->appendChild($this->CancelDate);
 	}
