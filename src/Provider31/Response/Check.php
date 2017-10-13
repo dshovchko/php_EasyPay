@@ -37,6 +37,8 @@ final class Check extends Response
          */
 	public function create_AccountInfo($accountinfo)
 	{
+		if (isset($this->AccountInfo)) return;
+		
 		$this->AccountInfo = self::createElement('AccountInfo');
 		$this->Response->appendChild($this->AccountInfo);
 		
