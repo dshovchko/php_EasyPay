@@ -36,6 +36,8 @@ final class Confirm extends Response
          */
 	public function create_OrderDate($orderdate)
 	{
+		if (isset($this->OrderDate)) return;
+		
 		$this->OrderDate = self::createElement('OrderDate', $orderdate);
 		$this->Response->appendChild($this->OrderDate);
 	}
