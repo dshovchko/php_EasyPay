@@ -102,12 +102,12 @@ class General
                 if ($this->raw_request == NULL)
                 {
                         Log::instance()->error('The xml request from the HTTP request body was not received');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -50);
                 }
                 if (strlen($this->raw_request) == 0)
                 {
                         Log::instance()->error('An empty xml request');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -51);
                 }
                 
                 $doc = new \DOMDocument();
@@ -116,10 +116,15 @@ class General
                 // process <Request> group
                 $r = $this->getNodes($doc, 'Request');
                 
-                if (count($r) != 1)
+                if (count($r) > 1)
                 {
                         Log::instance()->error('There is more than one Request element in the xml-query!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -52);
+                }
+                elseif (count($r) < 1)
+                {
+                        Log::instance()->error('The xml-query does not contain any element Request!');
+                        throw new \Exception('Error in request', -52);
                 }
                 
                 foreach ($r[0]->childNodes as $child)
@@ -141,7 +146,7 @@ class General
                                 else
                                 {
                                         Log::instance()->error('There is more than one Operation type element in the xml-query!');
-                                        throw new \Exception('Error in request', -99);
+                                        throw new \Exception('Error in request', -53);
                                 }
                         }
                 }
@@ -149,7 +154,7 @@ class General
                 if ( ! isset($this->Operation))
                 {
                         Log::instance()->error('There is no Operation type element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -55);
                 }
                 
                 // process <Operation> group
@@ -181,7 +186,7 @@ class General
                 else
                 {
                         Log::instance()->error('There is more than one '.$name.' element in the xml-query!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -56);
                 }
         }
         
@@ -196,29 +201,24 @@ class General
                 if ( ! isset($this->DateTime))
                 {
                         Log::instance()->error('There is no DateTime element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
                 if ( ! isset($this->Sign))
                 {
                         Log::instance()->error('There is no Sign element in the xml request!');
-                        throw new \Exception('Error in request', -99);
-                }
-                if ( ! isset($this->Operation))
-                {
-                        Log::instance()->error('There is no Operation type element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
                 if ( ! isset($this->ServiceId))
                 {
                         Log::instance()->error('There is no ServiceId element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
                 
                 // compare received value ServiceId with option ServiceId
                 if (intval($options['ServiceId']) != intval($this->ServiceId))
                 {
                         Log::instance()->error('This request is not for our ServiceId!');
-                        throw new \Exception('This request is not for us', -98);
+                        throw new \Exception('This request is not for us', -58);
                 }
         }
         
@@ -233,7 +233,7 @@ class General
                 if ( ! file_exists($options['EasySoftPKey']))
                 {
                         Log::instance()->error('The file with the public key EasyPay was not find!');
-                        throw new \Exception('Error while processing request', -97);
+                        throw new \Exception('Error while processing request', -98);
                 }
                 
                 // this code is written according to the easysoft example
