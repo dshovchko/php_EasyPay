@@ -230,6 +230,15 @@ class General
          */
         public function verify_sign($options)
         {
+                if (!isset($options['UseSign']) || ($options['UseSign'] === false))
+                {
+                        return null;
+                }
+                if ( ! isset($options['EasySoftPKey']))
+                {
+                        Log::instance()->error('The parameter EasySoftPKey is not set!');
+                        throw new \Exception('Error while processing request', -94);
+                }
                 if ( ! file_exists($options['EasySoftPKey']))
                 {
                         Log::instance()->error('The file with the public key EasyPay was not find!');
