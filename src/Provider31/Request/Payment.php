@@ -113,17 +113,17 @@ class Payment extends General
                 if ( ! isset($this->Account))
                 {
                         Log::instance()->error('There is no Account element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
                 if ( ! isset($this->OrderId))
                 {
                         Log::instance()->error('There is no OrderId element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
                 if ( ! isset($this->Amount))
                 {
                         Log::instance()->error('There is no Amount element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
         }
 }

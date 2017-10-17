@@ -75,7 +75,7 @@ class Confirm extends General
                 if ( ! isset($this->PaymentId))
                 {
                         Log::instance()->error('There is no PaymentId element in the xml request!');
-                        throw new \Exception('Error in request', -99);
+                        throw new \Exception('Error in request', -57);
                 }
         }
 }
