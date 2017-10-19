@@ -113,8 +113,7 @@ return array(
         'EasySoftPKey' => '/your_path/etc/EasyPay/EasySoftPublicKey2.pem',      // path for EasyPay public key
         'ProviderPKey' => '/your_path/etc/EasyPay/My.ppk',                      // path for yours private key
     ),
-
-
+);
 ```
 
 І останнє це сконфігурувати веб-сервер, щоб був доступ до _request.easypay.php_ з ip-адрес easypay.ua.
