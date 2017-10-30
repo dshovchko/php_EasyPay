@@ -72,7 +72,7 @@ class Check extends General
         {
                 parent::validate_request($options);
                 
-                if ( ! isset($this->Account2))
+                if ( ! isset($this->Account))
                 {
                         throw new Exception\Structure('There is no Account element in the xml request!', -57);
                 }
