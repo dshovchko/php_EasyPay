@@ -4,7 +4,7 @@
  *      Main class for EasyPay-Provider 3.1
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -71,13 +71,23 @@ class Provider31
                         
                         Log::instance()->add('the request was processed successfully');
                 }
-                catch (\Exception $e)
+                catch (Exception\Data $e)
                 {
-                        //      get error response
                         $this->response = $this->get_error_response($e->getCode(), $e->getMessage());
-                        
-                        Log::instance()->add('the request was processed with an error');
                 }
+                catch (Exception\Structure $e)
+                {
+                        $this->response = $this->get_error_response($e->getCode(), 'Error in request');
+                }
+                catch (Exception\Sign $e)
+                {
+                        $this->response = $this->get_error_response($e->getCode(), 'Signature error!');
+                }
+                catch (Exception\Runtime $e)
+                {
+                        $this->response = $this->get_error_response($e->getCode(), 'Error while processing request');
+                }
+                
                 //      output response
                 $this->response->out(self::$options);
                 exit;
@@ -86,6 +96,7 @@ class Provider31
         /**
          *      Process request and generate response
          *
+         *      @throws Exception\Structure
          */
         private function get_response()
         {
@@ -115,8 +126,7 @@ class Provider31
                                 break;
                 }
                 
-                Log::instance()->error('There is not supported value of Operation in xml-request!');
-                throw new \Exception('Error in request', 99);
+                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
         }
         
         /**
@@ -199,6 +209,8 @@ class Provider31
          */
         private function get_error_response($code, $message)
         {
+                Log::instance()->add('the request was processed with an error');
+
                 // Sending a response
                 return new Provider31\Response\ErrorInfo($code, $message);
         }

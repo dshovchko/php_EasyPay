@@ -4,7 +4,7 @@
  *      Class for Check request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -37,9 +37,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no Account element in the xml request!
          */
         public function test_validate_request_noAccount()
         {
@@ -60,9 +60,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one Account element in the xml-query!
          */
         public function test_validate_request_twoAccount()
         {

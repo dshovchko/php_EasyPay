@@ -4,7 +4,7 @@
  *      Class for Check request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -12,6 +12,7 @@
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
+use EasyPay\Exception;
 
 class Check extends General
 {
@@ -43,7 +44,6 @@ class Check extends General
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
-         *      @throws Exception
          */
         protected function parse_request_data()
         {
@@ -66,16 +66,15 @@ class Check extends General
          *      validate Check request
          *
          *      @param array $options
-         *      @throws Exception
+         *      @throws Exception\Structure
          */
         public function validate_request($options)
         {
                 parent::validate_request($options);
                 
-                if ( ! isset($this->Account))
+                if ( ! isset($this->Account2))
                 {
-                        Log::instance()->error('There is no Account element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no Account element in the xml request!', -57);
                 }
         }
 }

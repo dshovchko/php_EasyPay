@@ -4,7 +4,7 @@
  *      Class for response to Payment request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */

@@ -4,7 +4,7 @@
  *      General class for all request types
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -155,9 +155,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -50
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage The xml request from the HTTP request body was not received
          */
         public function test_validate_request_notreceived()
         {
@@ -170,9 +170,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -52
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage The xml-query does not contain any element Request!
          */
         public function test_validate_request_norequest()
         {
@@ -193,9 +193,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no DateTime element in the xml request!
          */
         public function test_validate_request_noDateTime()
         {
@@ -216,9 +216,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one DateTime element in the xml-query!
          */
         public function test_validate_request_twoDateTime()
         {
@@ -241,9 +241,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no Sign element in the xml request!
          */
         public function test_validate_request_noSign()
         {
@@ -264,9 +264,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one Sign element in the xml-query!
          */
         public function test_validate_request_twoSign()
         {
@@ -289,9 +289,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -55
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no Operation type element in the xml request!
          */
         public function test_validate_request_noOperation()
         {
@@ -309,9 +309,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -53
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one Operation type element in the xml-query!
          */
         public function test_validate_request_twoOperation()
         {
@@ -335,9 +335,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no ServiceId element in the xml request!
          */
         public function test_validate_request_noServiceId()
         {
@@ -358,9 +358,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one ServiceId element in the xml-query!
          */
         public function test_validate_request_twoServiceId()
         {
@@ -383,9 +383,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Data
          * @expectedExceptionCode -58
-         * @expectedExceptionMessage This request is not for us
+         * @expectedExceptionMessage This request is not for our ServiceId!
          */
         public function test_validate_request_invalidServiceId()
         {
@@ -407,9 +407,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -94
-         * @expectedExceptionMessage Error while processing request
+         * @expectedExceptionMessage The parameter EasySoftPKey is not set!
          */
         public function test_verify_sign_noEasySoftPKey()
         {
@@ -432,9 +432,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -98
-         * @expectedExceptionMessage Error while processing request
+         * @expectedExceptionMessage The file with the public key EasyPay was not find!
          */
         public function test_verify_sign_badfileEasySoftPKey()
         {
@@ -458,9 +458,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Sign
          * @expectedExceptionCode -95
-         * @expectedExceptionMessage Error while processing request
+         * @expectedExceptionMessage Signature of request is incorrect!
          */
         public function test_verify_sign_badsign()
         {

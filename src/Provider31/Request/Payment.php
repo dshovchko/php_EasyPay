@@ -4,7 +4,7 @@
  *      Class for Payment request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -12,6 +12,7 @@
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
+use EasyPay\Exception;
 
 class Payment extends General
 {
@@ -73,7 +74,6 @@ class Payment extends General
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
-         *      @throws Exception
          */
         protected function parse_request_data()
         {
@@ -104,7 +104,7 @@ class Payment extends General
          *      validate Payment request
          *
          *      @param array $options
-         *      @throws Exception
+         *      @throws Exception\Structure
          */
         public function validate_request($options)
         {
@@ -112,18 +112,15 @@ class Payment extends General
                 
                 if ( ! isset($this->Account))
                 {
-                        Log::instance()->error('There is no Account element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no Account element in the xml request!', -57);
                 }
                 if ( ! isset($this->OrderId))
                 {
-                        Log::instance()->error('There is no OrderId element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no OrderId element in the xml request!', -57);
                 }
                 if ( ! isset($this->Amount))
                 {
-                        Log::instance()->error('There is no Amount element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no Amount element in the xml request!', -57);
                 }
         }
 }

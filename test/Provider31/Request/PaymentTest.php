@@ -4,7 +4,7 @@
  *      Class for Payment request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -83,9 +83,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no Account element in the xml request!
          */
         public function test_validate_request_noAccount()
         {
@@ -108,9 +108,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one Account element in the xml-query!
          */
         public function test_validate_request_twoAccount()
         {
@@ -135,9 +135,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no OrderId element in the xml request!
          */
         public function test_validate_request_noOrderId()
         {
@@ -160,9 +160,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one OrderId element in the xml-query!
          */
         public function test_validate_request_twoOrderId()
         {
@@ -187,9 +187,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is no Amount element in the xml request!
          */
         public function test_validate_request_noAmount()
         {
@@ -212,9 +212,9 @@ EOD;
         }
         
         /**
-         * @expectedException Exception
+         * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
-         * @expectedExceptionMessage Error in request
+         * @expectedExceptionMessage There is more than one Amount element in the xml-query!
          */
         public function test_validate_request_twoAmount()
         {

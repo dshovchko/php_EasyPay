@@ -4,7 +4,7 @@
  *      Class for Cancel request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -12,6 +12,7 @@
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
+use EasyPay\Exception;
 
 class Cancel extends General
 {
@@ -43,7 +44,6 @@ class Cancel extends General
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
-         *      @throws Exception
          */
         protected function parse_request_data()
         {
@@ -66,7 +66,7 @@ class Cancel extends General
          *      validate Cancel request
          *
          *      @param array $options
-         *      @throws Exception
+         *      @throws Exception\Structure
          */
         public function validate_request($options)
         {
@@ -74,8 +74,7 @@ class Cancel extends General
                 
                 if ( ! isset($this->PaymentId))
                 {
-                        Log::instance()->error('There is no PaymentId element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no PaymentId element in the xml request!', -57);
                 }
         }
 }

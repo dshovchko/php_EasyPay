@@ -4,7 +4,7 @@
  *      Class Static Factory  to build a specific class of request
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -19,7 +19,7 @@ final class Request
          *      static method to create a specific class of request
          *
          *      @return General Request class of the appropriate type
-         *
+         *      @throws Exception\Structure
          */
         public static function get()
         {
@@ -50,8 +50,8 @@ final class Request
                                 break;
                                 
                         default:
-                                Log::instance()->error('There is not supported value of Operation in xml-request!');
-                                throw new \Exception('Error in request', 99);
+
+                                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
                                 break;
                 }
         }

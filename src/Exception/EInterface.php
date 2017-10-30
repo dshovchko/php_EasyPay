@@ -1,16 +1,13 @@
 <?php
 
 /**
- *      Class for logging
+ *      Interface for exceptions
  *
  *      @package php_EasyPay
  *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
+namespace EasyPay\Exception;
 
-namespace EasyPay;
-
-use Debulog;
-
-class Logger extends Debulog\Logger {}
+interface EInterface {}

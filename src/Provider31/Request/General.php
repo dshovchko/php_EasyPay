@@ -4,7 +4,7 @@
  *      General class for all request types
  *
  *      @package php_EasyPay
- *      @version 1.0
+ *      @version 1.1
  *      @author Dmitry Shovchko <d.shovchko@gmail.com>
  *
  */
@@ -12,6 +12,7 @@
 namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
+use EasyPay\Exception;
 
 class General
 {
@@ -95,19 +96,17 @@ class General
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
-         *      @throws Exception
+         *      @throws Exception\Structure
          */
         protected function parse_request_data()
         {
                 if ($this->raw_request == NULL)
                 {
-                        Log::instance()->error('The xml request from the HTTP request body was not received');
-                        throw new \Exception('Error in request', -50);
+                        throw new Exception\Structure('The xml request from the HTTP request body was not received', -50);
                 }
                 if (strlen($this->raw_request) == 0)
                 {
-                        Log::instance()->error('An empty xml request');
-                        throw new \Exception('Error in request', -51);
+                        throw new Exception\Structure('An empty xml request', -51);
                 }
                 
                 $doc = new \DOMDocument();
@@ -118,13 +117,11 @@ class General
                 
                 if (count($r) > 1)
                 {
-                        Log::instance()->error('There is more than one Request element in the xml-query!');
-                        throw new \Exception('Error in request', -52);
+                        throw new Exception\Structure('There is more than one Request element in the xml-query!', -52);
                 }
                 elseif (count($r) < 1)
                 {
-                        Log::instance()->error('The xml-query does not contain any element Request!');
-                        throw new \Exception('Error in request', -52);
+                        throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
                 }
                 
                 foreach ($r[0]->childNodes as $child)
@@ -145,16 +142,14 @@ class General
                                 }
                                 else
                                 {
-                                        Log::instance()->error('There is more than one Operation type element in the xml-query!');
-                                        throw new \Exception('Error in request', -53);
+                                        throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
                                 }
                         }
                 }
                 
                 if ( ! isset($this->Operation))
                 {
-                        Log::instance()->error('There is no Operation type element in the xml request!');
-                        throw new \Exception('Error in request', -55);
+                        throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
                 }
                 
                 // process <Operation> group
@@ -175,7 +170,7 @@ class General
          *      @param DOMNode $n
          *      @param string $name
          *
-         *      @throws Exception
+         *      @throws Exception\Structure
          */
         protected function parse_request_node($n, $name)
         {
@@ -185,8 +180,7 @@ class General
                 }
                 else
                 {
-                        Log::instance()->error('There is more than one '.$name.' element in the xml-query!');
-                        throw new \Exception('Error in request', -56);
+                        throw new Exception\Structure('There is more than one '.$name.' element in the xml-query!', -56);
                 }
         }
         
@@ -194,31 +188,28 @@ class General
          *      "Rough" validation of the received xml request 
          *
          *      @param array $options
-         *      @throws Exception
+         *      @throws Exception\Data
+         *      @throws Exception\Structure
          */
         public function validate_request($options)
         {
                 if ( ! isset($this->DateTime))
                 {
-                        Log::instance()->error('There is no DateTime element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no DateTime element in the xml request!', -57);
                 }
                 if ( ! isset($this->Sign))
                 {
-                        Log::instance()->error('There is no Sign element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no Sign element in the xml request!', -57);
                 }
                 if ( ! isset($this->ServiceId))
                 {
-                        Log::instance()->error('There is no ServiceId element in the xml request!');
-                        throw new \Exception('Error in request', -57);
+                        throw new Exception\Structure('There is no ServiceId element in the xml request!', -57);
                 }
                 
                 // compare received value ServiceId with option ServiceId
                 if (intval($options['ServiceId']) != intval($this->ServiceId))
                 {
-                        Log::instance()->error('This request is not for our ServiceId!');
-                        throw new \Exception('This request is not for us', -58);
+                        throw new Exception\Data('This request is not for our ServiceId!', -58);
                 }
         }
         
@@ -226,7 +217,8 @@ class General
          *      Verify signature of request
          *
          *      @param array $options
-         *      @throws Exception
+         *      @throws Exception\Runtime
+         *      @throws Exception\Sign
          */
         public function verify_sign($options)
         {
@@ -236,13 +228,11 @@ class General
                 }
                 if ( ! isset($options['EasySoftPKey']))
                 {
-                        Log::instance()->error('The parameter EasySoftPKey is not set!');
-                        throw new \Exception('Error while processing request', -94);
+                        throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
                 }
                 if ( ! file_exists($options['EasySoftPKey']))
                 {
-                        Log::instance()->error('The file with the public key EasyPay was not find!');
-                        throw new \Exception('Error while processing request', -98);
+                        throw new Exception\Runtime('The file with the public key EasyPay was not find!', -98);
                 }
                 
                 // this code is written according to the easysoft example
@@ -250,35 +240,30 @@ class General
                 $fpkey = fopen($options['EasySoftPKey'], "rb");
                 if ($fpkey === FALSE)
                 {
-                        Log::instance()->error('The file with the public key EasyPay was not open!');
-                        throw new \Exception('Error while processing request', -97);
+                        throw new Exception\Runtime('The file with the public key EasyPay was not open!', -97);
                 }
                 $pkeyid = fread($fpkey, 8192);
                 if ($pkeyid === FALSE)
                 {
-                        Log::instance()->error('The file with the public key EasyPay was not read!');
-                        throw new \Exception('Error while processing request', -97);
+                        throw new Exception\Runtime('The file with the public key EasyPay was not read!', -97);
                 }
                 fclose($fpkey);
                 
                 $pub_key = openssl_pkey_get_public($pkeyid);
                 if ($pub_key === FALSE)
                 {
-                        Log::instance()->error('Can not extract the public key from certificate!');
-                        throw new \Exception('Error while processing request', -97);
+                        throw new Exception\Runtime('Can not extract the public key from certificate!', -97);
                 }
                 $bin_sign = pack("H*", $this->Sign);
                 $xml = str_replace($this->Sign, '', $this->raw_request);
                 $check = openssl_verify($xml, $bin_sign, $pub_key);
                 if ($check == -1)
                 {
-                        Log::instance()->error('Error verify signature of request!');
-                        throw new \Exception('Error while processing request', -96);
+                        throw new Exception\Sign('Error verify signature of request!', -96);
                 }
                 elseif ($check == 0)
                 {
-                        Log::instance()->error('Signature of request is incorrect!');
-                        throw new \Exception('Error while processing request', -95);
+                        throw new Exception\Sign('Signature of request is incorrect!', -95);
                 }
         }
         
