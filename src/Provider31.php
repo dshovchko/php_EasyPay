@@ -71,10 +71,6 @@ class Provider31
                         
                         Log::instance()->add('the request was processed successfully');
                 }
-                catch (Exception\Data $e)
-                {
-                        $this->response = $this->get_error_response($e->getCode(), $e->getMessage());
-                }
                 catch (Exception\Structure $e)
                 {
                         $this->response = $this->get_error_response($e->getCode(), 'Error in request');
@@ -86,6 +82,10 @@ class Provider31
                 catch (Exception\Runtime $e)
                 {
                         $this->response = $this->get_error_response($e->getCode(), 'Error while processing request');
+                }
+                catch (\Exception $e)
+                {
+                        $this->response = $this->get_error_response($e->getCode(), $e->getMessage());
                 }
                 
                 //      output response
