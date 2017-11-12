@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/dshovchko/php_EasyPay.svg?branch=master)](https://travis-ci.org/dshovchko/php_EasyPay)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dshovchko/php_EasyPay/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dshovchko/php_EasyPay/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dshovchko/php_EasyPay/badge.svg?branch=master)](https://coveralls.io/github/dshovchko/php_EasyPay?branch=master)
+
+php_EasyPay
+===========
+
 Бібліотека для організації шлюзу прийому платежів від __EasyPay.ua__ по протоколу взаємодії EasySoft-Provider v3.1 (деталі дивись в EasySoft-Gate specification).
 
 ### Встановлення
