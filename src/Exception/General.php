@@ -19,7 +19,7 @@ class General extends \RuntimeException implements EInterface
          *      Constructor
          *
          *      @param string $message
-         *      @param Throwable $previous
+         *      @param \Throwable $previous
          */
         public function __construct($message, $code=0, \Exception $previous=null, $tracelog=false)
         {
