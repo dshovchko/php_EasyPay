@@ -31,13 +31,13 @@ class PaymentTest extends TestCase
 </Request>
 EOD;
                 $r = new Payment($raw);
-                
+
                 $this->assertEquals(
                     $r->Account(),
                     '64229400128'
                 );
         }
-        
+
         public function test_OrderId()
         {
                 $raw =<<<EOD
@@ -53,13 +53,13 @@ EOD;
 </Request>
 EOD;
                 $r = new Payment($raw);
-                
+
                 $this->assertEquals(
                     $r->OrderId(),
                     '17212'
                 );
         }
-        
+
         public function test_Amount()
         {
                 $raw =<<<EOD
@@ -75,13 +75,13 @@ EOD;
 </Request>
 EOD;
                 $r = new Payment($raw);
-                
+
                 $this->assertEquals(
                     $r->Amount(),
                     '25'
                 );
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -106,7 +106,7 @@ EOD;
                 $r = new Payment($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -133,7 +133,7 @@ EOD;
                 $r = new Payment($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -158,7 +158,7 @@ EOD;
                 $r = new Payment($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -185,7 +185,7 @@ EOD;
                 $r = new Payment($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -210,7 +210,7 @@ EOD;
                 $r = new Payment($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -231,6 +231,27 @@ EOD;
     <Account>64229400128</Account>
     <Amount>25</Amount>
     <Amount>32</Amount>
+  </Payment>
+</Request>
+EOD;
+                $r = new Payment($raw);
+                $r->validate_request($options);
+        }
+
+        public function test_validate_request()
+        {
+                $options = array(
+                        'ServiceId' => 127
+                );
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Payment>
+    <ServiceId>127</ServiceId>
+    <OrderId>17212</OrderId>
+    <Account>64229400128</Account>
+    <Amount>25</Amount>
   </Payment>
 </Request>
 EOD;
