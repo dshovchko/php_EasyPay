@@ -29,13 +29,13 @@ class CancelTest extends TestCase
 </Request>
 EOD;
                 $r = new Cancel($raw);
-                
+
                 $this->assertEquals(
                     $r->PaymentId(),
                     '732329'
                 );
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -58,7 +58,7 @@ EOD;
                 $r = new Cancel($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -77,6 +77,25 @@ EOD;
     <ServiceId>1234</ServiceId>
     <PaymentId>732329</PaymentId>
     <PaymentId>493327</PaymentId>
+  </Cancel>
+</Request>
+EOD;
+                $r = new Cancel($raw);
+                $r->validate_request($options);
+        }
+
+        public function test_validate_request()
+        {
+                $options = array(
+                        'ServiceId' => 1234
+                );
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Cancel>
+    <ServiceId>1234</ServiceId>
+    <PaymentId>732329</PaymentId>
   </Cancel>
 </Request>
 EOD;

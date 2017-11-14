@@ -29,13 +29,13 @@ class ConfirmTest extends TestCase
 </Request>
 EOD;
                 $r = new Confirm($raw);
-                
+
                 $this->assertEquals(
                     $r->PaymentId(),
                     '5169801'
                 );
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -58,7 +58,7 @@ EOD;
                 $r = new Confirm($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -76,6 +76,25 @@ EOD;
   <Confirm>
     <ServiceId>1234</ServiceId>
     <PaymentId>5169801</PaymentId>
+    <PaymentId>6056011</PaymentId>
+  </Confirm>
+</Request>
+EOD;
+                $r = new Confirm($raw);
+                $r->validate_request($options);
+        }
+
+        public function test_validate_request()
+        {
+                $options = array(
+                        'ServiceId' => 1234
+                );
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Confirm>
+    <ServiceId>1234</ServiceId>
     <PaymentId>6056011</PaymentId>
   </Confirm>
 </Request>

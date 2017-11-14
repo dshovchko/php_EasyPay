@@ -29,13 +29,13 @@ class CheckTest extends TestCase
 </Request>
 EOD;
                 $r = new Check($raw);
-                
+
                 $this->assertEquals(
                     $r->Account(),
                     '987654321'
                 );
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -58,7 +58,7 @@ EOD;
                 $r = new Check($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -77,6 +77,25 @@ EOD;
     <Account>109876543</Account>
     <ServiceId>1234</ServiceId>
     <Account>987654321</Account>
+  </Check>
+</Request>
+EOD;
+                $r = new Check($raw);
+                $r->validate_request($options);
+        }
+
+        public function test_validate_request()
+        {
+                $options = array(
+                        'ServiceId' => 1234
+                );
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+    <Account>109876543</Account>
+    <ServiceId>1234</ServiceId>
   </Check>
 </Request>
 EOD;
