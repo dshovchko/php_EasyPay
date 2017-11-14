@@ -30,13 +30,13 @@ class GeneralTest extends TestCase
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->DateTime(),
                     '2017-10-01T11:11:11'
                 );
         }
-        
+
         public function test_Sign()
         {
                 $raw =<<<EOD
@@ -50,13 +50,13 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->Sign(),
                     '5F9ABA6AB64621F4DEDC42E8B90201A0D6203A725B54919719A2E05D323729CC5CD96D03115C31310FA90B38B953394537336A9B38C2DC2AB2367D85D04E1A19478B867A1BC03231FB78A7EA3C9FE74C7EE033CB3AB42159D639FE627953E8EF15C299F4A0902C96EF00F40677819FE5CF7A16B38544E70668024DA96F4AEE5E'
                 );
         }
-        
+
         public function test_Operation()
         {
                 // Check
@@ -71,12 +71,12 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->Operation(),
                     'Check'
                 );
-                
+
                 // Payment
                 $raw =<<<EOD
 <Request>
@@ -91,12 +91,12 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->Operation(),
                     'Payment'
                 );
-                
+
                 // Confirm
                 $raw =<<<EOD
 <Request>
@@ -109,12 +109,12 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->Operation(),
                     'Confirm'
                 );
-                
+
                 // Cancel
                 $raw =<<<EOD
 <Request>
@@ -127,13 +127,13 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->Operation(),
                     'Cancel'
                 );
         }
-        
+
         public function test_ServiceId()
         {
                 $raw =<<<EOD
@@ -147,13 +147,13 @@ EOD;
 </Request>
 EOD;
                 $r = new General($raw);
-                
+
                 $this->assertEquals(
                     $r->ServiceId(),
                     '1234'
                 );
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -50
@@ -168,7 +168,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -52
@@ -191,7 +191,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -214,7 +214,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -239,7 +239,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -262,7 +262,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -287,7 +287,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -55
@@ -307,7 +307,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -53
@@ -333,7 +333,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -57
@@ -356,7 +356,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -56
@@ -381,7 +381,7 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Data
          * @expectedExceptionCode -58
@@ -405,7 +405,46 @@ EOD;
                 $r = new General($raw);
                 $r->validate_request($options);
         }
-        
+
+        public function test_verify_sign_noUseSignOption()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+    <ServiceId>1234</ServiceId>
+    <Account>987654321</Account>
+  </Check>
+</Request>
+EOD;
+                $options = array(
+                        'ServiceId' => 1234
+                );
+                $r = new General($raw);
+                $r->verify_sign($options);
+        }
+
+        public function test_verify_sign_falseUseSignOption()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+    <ServiceId>1234</ServiceId>
+    <Account>987654321</Account>
+  </Check>
+</Request>
+EOD;
+                $options = array(
+                        'ServiceId' => 1234,
+                        'UseSign' => false,
+                );
+                $r = new General($raw);
+                $r->verify_sign($options);
+        }
+
         /**
          * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -94
@@ -430,7 +469,7 @@ EOD;
                 $r = new General($raw);
                 $r->verify_sign($options);
         }
-        
+
         /**
          * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -98
@@ -456,7 +495,33 @@ EOD;
                 $r = new General($raw);
                 $r->verify_sign($options);
         }
-        
+
+        /**
+         * @expectedException EasyPay\Exception\Runtime
+         * @expectedExceptionCode -97
+         * @expectedExceptionMessage Can not extract the public key from certificate!
+         */
+        public function test_verify_sign_corruptedfileEasySoftPKey()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+    <ServiceId>1234</ServiceId>
+    <Account>987654321</Account>
+  </Check>
+</Request>
+EOD;
+                $options = array(
+                        'ServiceId' => 1234,
+                        'UseSign' => true,
+                        'EasySoftPKey' => dirname(__FILE__).'/../../files/php_easypay_corrupted.cer'
+                );
+                $r = new General($raw);
+                $r->verify_sign($options);
+        }
+
         /**
          * @expectedException EasyPay\Exception\Sign
          * @expectedExceptionCode -95
@@ -482,7 +547,7 @@ EOD;
                 $r = new General($raw);
                 $r->verify_sign($options);
         }
-        
+
         public function test_verify_sign_oksign()
         {
                 $raw =<<<EOD
