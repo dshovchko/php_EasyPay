@@ -17,42 +17,47 @@ use EasyPay\Exception;
 class General
 {
         /**
+         *      @var string raw request
+         */
+        protected $raw_request;
+
+        /**
          *      @var string 'DateTime' node
          */
         protected $DateTime;
-        
+
         /**
          *      @var string 'Sign' node
          */
         protected $Sign;
-        
+
         /**
          *      @var string 'Operation' type
          */
         protected $Operation;
-        
+
         /**
          *      @var string 'ServiceId' node
          */
         protected $ServiceId;
-        
+
         /**
          *      @var array list of possible operations
          */
         protected $operations = array('Check','Payment','Confirm','Cancel');
-        
+
         /**
          *      General constructor
-         *      
+         *
          *      @param string $raw Raw request data
          */
         public function __construct($raw)
         {
-                $this->raw_request = $raw;
-                
+                $this->raw_request = strval($raw);
+
                 $this->parse_request_data();
         }
-        
+
         /**
          *      Get DateTime
          *
@@ -62,7 +67,7 @@ class General
         {
                 return $this->DateTime;
         }
-        
+
         /**
          *      Get Sign
          *
@@ -72,7 +77,7 @@ class General
         {
                 return $this->Sign;
         }
-        
+
         /**
          *      Get Operation type
          *
@@ -82,7 +87,7 @@ class General
         {
                 return $this->Operation;
         }
-        
+
         /**
          *      Get ServiceId
          *
@@ -92,7 +97,7 @@ class General
         {
                 return $this->ServiceId;
         }
-        
+
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
@@ -100,30 +105,29 @@ class General
          */
         protected function parse_request_data()
         {
-                if ($this->raw_request == NULL)
+                if (empty($this->raw_request))
                 {
-                        throw new Exception\Structure('The xml request from the HTTP request body was not received', -50);
+                        throw new Exception\Structure('An empty xml request', -50);
                 }
-                if (strlen($this->raw_request) == 0)
-                {
-                        throw new Exception\Structure('An empty xml request', -51);
-                }
-                
+
+                libxml_use_internal_errors(true);
                 $doc = new \DOMDocument();
-                $doc->loadXML($this->raw_request);
-                
+                if ( ! $doc->loadXML($this->raw_request))
+                {
+                        foreach(libxml_get_errors() as $e){
+                                Log::instance()->error($e->message);
+                        }
+                        throw new Exception\Structure('The wrong XML is received', -51);
+                }
+
                 // process <Request> group
                 $r = $this->getNodes($doc, 'Request');
-                
-                if (count($r) > 1)
-                {
-                        throw new Exception\Structure('There is more than one Request element in the xml-query!', -52);
-                }
-                elseif (count($r) < 1)
+
+                if (count($r) < 1)
                 {
                         throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
                 }
-                
+
                 foreach ($r[0]->childNodes as $child)
                 {
                         if ($child->nodeName == 'DateTime')
@@ -146,15 +150,15 @@ class General
                                 }
                         }
                 }
-                
+
                 if ( ! isset($this->Operation))
                 {
                         throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
                 }
-                
+
                 // process <Operation> group
                 $r = $this->getNodes($doc, $this->Operation);
-                
+
                 foreach ($r[0]->childNodes as $child)
                 {
                         if ($child->nodeName == 'ServiceId')
@@ -163,11 +167,11 @@ class General
                         }
                 }
         }
-        
+
         /**
          *      Parse node of request
          *
-         *      @param DOMNode $n
+         *      @param \DOMNode $n
          *      @param string $name
          *
          *      @throws Exception\Structure
@@ -183,9 +187,9 @@ class General
                         throw new Exception\Structure('There is more than one '.$name.' element in the xml-query!', -56);
                 }
         }
-        
+
         /**
-         *      "Rough" validation of the received xml request 
+         *      "Rough" validation of the received xml request
          *
          *      @param array $options
          *      @throws Exception\Data
@@ -205,14 +209,14 @@ class General
                 {
                         throw new Exception\Structure('There is no ServiceId element in the xml request!', -57);
                 }
-                
+
                 // compare received value ServiceId with option ServiceId
                 if (intval($options['ServiceId']) != intval($this->ServiceId))
                 {
                         throw new Exception\Data('This request is not for our ServiceId!', -58);
                 }
         }
-        
+
         /**
          *      Verify signature of request
          *
@@ -234,7 +238,7 @@ class General
                 {
                         throw new Exception\Runtime('The file with the public key EasyPay was not find!', -98);
                 }
-                
+
                 // this code is written according to the easysoft example
 
                 $fpkey = fopen($options['EasySoftPKey'], "rb");
@@ -248,7 +252,7 @@ class General
                         throw new Exception\Runtime('The file with the public key EasyPay was not read!', -97);
                 }
                 fclose($fpkey);
-                
+
                 $pub_key = openssl_pkey_get_public($pkeyid);
                 if ($pub_key === FALSE)
                 {
@@ -266,15 +270,15 @@ class General
                         throw new Exception\Sign('Signature of request is incorrect!', -95);
                 }
         }
-        
+
         /**
          *      Selects nodes by name
          *
-         *      @param DOMDocument $dom
+         *      @param \DOMDocument $dom
          *      @param string $name
          *      @param array $ret
          *
-         *      @return array nodes with the name 
+         *      @return array nodes with the name
          */
         protected function getNodes($dom, $name, $ret=array())
         {
@@ -283,7 +287,7 @@ class General
                         if ($child->nodeName == $name)
                         {
                                 array_push($ret, $child);
-                        }   
+                        }
                         else
                         {
                                 if (count($child->childNodes) > 0)
@@ -292,8 +296,8 @@ class General
                                 }
                         }
                 }
-                
+
                 return $ret;
         }
-        
+
 }

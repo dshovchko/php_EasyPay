@@ -17,6 +17,45 @@ use EasyPay\Provider31\Request\General;
 class GeneralTest extends TestCase
 {
 
+        public function test_constructor()
+        {
+                $raw =<<<EOD
+<Request>
+        <DateTime>2017-10-01T11:11:11</DateTime>
+        <Sign></Sign>
+        <Check>
+        <ServiceId>1234</ServiceId>
+        <Account>987654321</Account>
+        </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $this->assertEquals(
+                        $raw,
+                        $this->invokeProperty($r, 'raw_request')->getValue($r)
+                );
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Structure
+         * @expectedExceptionCode -50
+         * @expectedExceptionMessage An empty xml request
+         */
+        public function test_constructor_empty_request()
+        {
+                $r = new General('');
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Structure
+         * @expectedExceptionCode -51
+         * @expectedExceptionMessage The wrong XML is received
+         */
+        public function test_constructor_bad_request()
+        {
+                $r = new General(5);
+        }
+
         public function test_DateTime()
         {
                 $raw =<<<EOD
@@ -157,9 +196,9 @@ EOD;
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -50
-         * @expectedExceptionMessage The xml request from the HTTP request body was not received
+         * @expectedExceptionMessage An empty xml request
          */
-        public function test_validate_request_notreceived()
+        public function test_validate_request_empty()
         {
                 $options = array(
                         'ServiceId' => 1234
