@@ -1,7 +1,7 @@
 <?php
 
 /**
- *      Class for logging
+ *      Singleton class for logging
  *
  *      @package php_EasyPay
  *      @version 1.1
@@ -14,25 +14,25 @@ namespace EasyPay;
 use Debulog;
 
 class Log {
-    
+
         /**
-         *      @var Log
+         *      @var Debulog\LoggerInterface
          */
         protected static $_instance;
-        
+
         /**
          *      gets the instance
-         *      
-         *      @return Log
+         *
+         *      @return Debulog\LoggerInterface
          */
         public static function instance()
         {
                 return self::$_instance;
         }
-        
+
         /**
          *      sets the logger instance
-         *      
+         *
          *      @param Debulog\LoggerInterface $log
          */
         public static function set(Debulog\LoggerInterface $log)
