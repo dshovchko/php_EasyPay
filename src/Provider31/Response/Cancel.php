@@ -15,29 +15,34 @@ use \EasyPay\Provider31\Response as Response;
 
 final class Cancel extends Response
 {
+    /**
+     *      @var string
+     */
+    protected $CancelDate;
+
 	/**
-         *      Cancel constructor
-         *
-         *      @param string $orderdate
-         */
-	function __construct($canceldate) {
+     *      Cancel constructor
+     *
+     *      @param string $orderdate
+     */
+	public function __construct($canceldate) {
 		parent::__construct();
-		
+
 		$this->setElementValue('StatusCode', 0);
 		$this->setElementValue('StatusDetail', 'checked');
-		
+
 		$this->create_CancelDate($canceldate);
 	}
-	
+
 	/**
-         *      Create CancelDate node
-         *
-         *      @param string $canceldate
-         */
+     *      Create CancelDate node
+     *
+     *      @param string $canceldate
+     */
 	public function create_CancelDate($canceldate)
 	{
 		if (isset($this->CancelDate)) return;
-		
+
 		$this->CancelDate = self::createElement('CancelDate', $canceldate);
 		$this->Response->appendChild($this->CancelDate);
 	}

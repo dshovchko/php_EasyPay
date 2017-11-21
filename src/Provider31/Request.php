@@ -15,70 +15,60 @@ use EasyPay\Log as Log;
 
 final class Request
 {
-        /**
-         *      static method to create a specific class of request
-         *
-         *      @return General Request class of the appropriate type
-         *      @throws Exception\Structure
-         */
-        public static function get()
-        {
-                $raw = self::get_http_raw_post_data();
-                
-                $r = new Request\General($raw);
-                
-                switch ($r->Operation())
-                {
-                        case 'Check':
-                                
-                                return new Request\Check($raw);
-                                break;
-                                
-                        case 'Payment':
-                                
-                                return new Request\Payment($raw);
-                                break;
-                                
-                        case 'Confirm':
-                                
-                                return new Request\Confirm($raw);
-                                break;
-                                
-                        case 'Cancel';
-                                
-                                return new Request\Cancel($raw);
-                                break;
-                                
-                        default:
+    /**
+     *      static method to create a specific class of request
+     *
+     *      @return Request\General Request class of the appropriate type
+     *      @throws Exception\Structure
+     */
+    public static function get()
+    {
+        $raw = self::get_http_raw_post_data();
 
-                                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
-                                break;
-                }
-        }
-        
-        /**
-         *      Get data from the body of the http request
-         *
-         *      - with the appropriate configuration of php.ini they can be found
-         *        in the global variable $HTTP_RAW_POST_DATA
-         *
-         *      - but it's easier just to read the data from the php://input stream,
-         *        which does not depend on the php.ini directives and allows you to read
-         *        raw data from the request body
-         *
-         *      @return string Http raw post data
-         *      
-         */
-        private static function get_http_raw_post_data()
+        $r = new Request\General($raw);
+
+        switch ($r->Operation())
         {
-                Log::instance()->add('request from ' . $_SERVER['REMOTE_ADDR']);
-                
-                $raw_request = file_get_contents('php://input');
-                
-                Log::instance()->debug('request received: ');
-                Log::instance()->debug($raw_request);
-                Log::instance()->debug(' ');
-                
-                return $raw_request;
+            case 'Check':
+                return new Request\Check($raw);
+
+            case 'Payment':
+                return new Request\Payment($raw);
+
+            case 'Confirm':
+                return new Request\Confirm($raw);
+
+            case 'Cancel';
+                return new Request\Cancel($raw);
+
+            default:
+                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
         }
+    }
+
+    /**
+     *      Get data from the body of the http request
+     *
+     *      - with the appropriate configuration of php.ini they can be found
+     *        in the global variable $HTTP_RAW_POST_DATA
+     *
+     *      - but it's easier just to read the data from the php://input stream,
+     *        which does not depend on the php.ini directives and allows you to read
+     *        raw data from the request body
+     *
+     *      @return string Http raw post data
+     *
+     */
+    private static function get_http_raw_post_data()
+    {
+        Log::instance()->add('request from ' . $_SERVER['REMOTE_ADDR']);
+
+        $raw_request = file_get_contents('php://input');
+
+        Log::instance()->debug('request received: ');
+        Log::instance()->debug($raw_request);
+        Log::instance()->debug(' ');
+
+        return $raw_request;
+    }
 }

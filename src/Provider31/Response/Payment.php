@@ -15,29 +15,35 @@ use \EasyPay\Provider31\Response as Response;
 
 final class Payment extends Response
 {
+    /**
+     *      @var string
+     */
+    protected $PaymentId;
+
 	/**
-         *      Payment constructor
-         *
-         *      @param string $paymentid
-         */
-	function __construct($paymentid) {
+     *      Payment constructor
+     *
+     *      @param string $paymentid
+     */
+    public function __construct($paymentid)
+    {
 		parent::__construct();
-		
+
 		$this->setElementValue('StatusCode', 0);
 		$this->setElementValue('StatusDetail', 'checked');
-		
+
 		$this->create_PaymentId($paymentid);
 	}
-	
+
 	/**
-         *      Create PaymentId node
-         *
-         *      @param string $paymentid
-         */
+     *      Create PaymentId node
+     *
+     *      @param string $paymentid
+     */
 	public function create_PaymentId($paymentid)
 	{
 		if (isset($this->PaymentId)) return;
-		
+
 		$this->PaymentId = self::createElement('PaymentId', $paymentid);
 		$this->Response->appendChild($this->PaymentId);
 	}

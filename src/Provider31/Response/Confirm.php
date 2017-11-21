@@ -15,29 +15,35 @@ use \EasyPay\Provider31\Response as Response;
 
 final class Confirm extends Response
 {
+    /**
+     *      @var string
+     */
+    protected $OrderDate;
+
 	/**
-         *      Confirm constructor
-         *
-         *      @param string $orderdate
-         */
-	function __construct($orderdate) {
+     *      Confirm constructor
+     *
+     *      @param string $orderdate
+     */
+    public function __construct($orderdate)
+    {
 		parent::__construct();
-		
+
 		$this->setElementValue('StatusCode', 0);
 		$this->setElementValue('StatusDetail', 'checked');
-		
+
 		$this->create_OrderDate($orderdate);
 	}
-	
+
 	/**
-         *      Create OrderDate node
-         *
-         *      @param string $orderdate
-         */
+     *      Create OrderDate node
+     *
+     *      @param string $orderdate
+     */
 	public function create_OrderDate($orderdate)
 	{
 		if (isset($this->OrderDate)) return;
-		
+
 		$this->OrderDate = self::createElement('OrderDate', $orderdate);
 		$this->Response->appendChild($this->OrderDate);
 	}
