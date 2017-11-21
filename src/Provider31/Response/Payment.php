@@ -16,7 +16,7 @@ use \EasyPay\Provider31\Response as Response;
 final class Payment extends Response
 {
     /**
-     *      @var string
+     *      @var \DOMElement
      */
     protected $PaymentId;
 

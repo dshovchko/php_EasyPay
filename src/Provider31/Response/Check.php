@@ -17,7 +17,7 @@ use \EasyPay\Provider31\AccountInfo as AccountInfo;
 final class Check extends Response
 {
     /**
-     *      @var string
+     *      @var \DOMElement
      */
     protected $AccountInfo;
 

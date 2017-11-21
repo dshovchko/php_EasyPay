@@ -23,12 +23,12 @@ abstract class Response extends \DomDocument
     const TEMPLATE = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime></DateTime></Response>';
 
     /**
-     *      @var string
+     *      @var \DOMNode
      */
     protected $Response;
 
     /**
-     *      @var string
+     *      @var \DOMElement
      */
     protected $Sign;
 
