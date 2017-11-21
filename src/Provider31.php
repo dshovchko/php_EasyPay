@@ -29,7 +29,7 @@ class Provider31
     protected static $cb;
 
     /**
-     *      @var Request
+     *      @var Request\General
      */
     private $request;
 
@@ -91,7 +91,6 @@ class Provider31
 
         //      output response
         $this->response->out(self::$options);
-        exit;
     }
 
     /**
