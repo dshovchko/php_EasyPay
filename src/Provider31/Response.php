@@ -12,6 +12,7 @@
 namespace EasyPay\Provider31;
 
 use EasyPay\Log as Log;
+use EasyPay\Key as Key;
 
 abstract class Response extends \DomDocument
 {
@@ -20,21 +21,21 @@ abstract class Response extends \DomDocument
          *
          */
         const TEMPLATE = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime></DateTime></Response>';
-        
+
         /**
          *      Response constructor
-         *      
+         *
          */
         public function __construct()
         {
                 parent::__construct('1.0', 'UTF-8');
 
                 self::loadXML(self::TEMPLATE);
-                
+
                 $this->Response = $this->firstChild;
                 $this->setElementValue('DateTime', date('Y-m-d\TH:i:s', time()));
         }
-        
+
         /**
          *      Create new element node
          *
@@ -45,7 +46,7 @@ abstract class Response extends \DomDocument
         {
                 return parent::createElement($name, $value);
         }
-        
+
         /**
          *      Create new node attribute
          *
@@ -56,7 +57,7 @@ abstract class Response extends \DomDocument
         {
                 return new DOMAttr($name, $value);
         }
-        
+
         /**
          *      Set node value
          *
@@ -73,7 +74,7 @@ abstract class Response extends \DomDocument
                         }
                 }
         }
-        
+
         /**
          *      Dumps response into a string
          *
@@ -87,7 +88,7 @@ abstract class Response extends \DomDocument
 
                 return $this->saveXML(NULL, LIBXML_NOEMPTYTAG);
         }
-        
+
         /**
          *      Send response
          *
@@ -96,16 +97,16 @@ abstract class Response extends \DomDocument
         public function out($options)
         {
                 $this->sign($options);
-                
+
                 Log::instance()->debug('response sends: ');
                 Log::instance()->debug($this->friendly());
-                
+
                 ob_clean();
                 header("Content-Type: text/xml; charset=utf-8");
                 echo $this->friendly();
                 exit;
         }
-        
+
         /**
          *      Add Sign (if hasn't yet done)
          *
@@ -114,18 +115,18 @@ abstract class Response extends \DomDocument
         protected function sign($options)
         {
                 if (isset($this->Sign)) return;
-                
+
                 if (isset($options['UseSign']) && ($options['UseSign'] === true))
                 {
                         $this->Sign = self::createElement('Sign');
                         $this->Response->appendChild($this->Sign);
-                        
+
                         $sign = $this->generate_sign($options);
-                        
+
                         $this->Sign->nodeValue = $sign;
                 }
         }
-        
+
         /**
          *      Generate signature of response
          *
@@ -139,28 +140,15 @@ abstract class Response extends \DomDocument
                         Log::instance()->error('The parameter ProviderPKey is not set!');
                         return null;
                 }
-                if ( ! file_exists($options['ProviderPKey']))
+                try
                 {
-                        Log::instance()->error('The file with the public key Provider was not find!');
-                        return null;
+                    $pkeyid = (new Key())->get($options['ProviderPKey'], 'private');
                 }
-                
-                // this code is written according to the easysoft example
-                
-                $fpkey = fopen($options['ProviderPKey'], "rb");
-                if ($fpkey === FALSE)
+                catch (\Exception $e)
                 {
-                        Log::instance()->error('The file with the public key Provider was not open!');
-                        return null;
+                    return null;
                 }
-                $pkeyid = fread($fpkey, 8192);
-                if ($pkeyid === FALSE)
-                {
-                        Log::instance()->error('The file with the public key Provider was not read!');
-                        return null;
-                }
-                fclose($fpkey);
-                
+
                 $pr_key = openssl_pkey_get_private($pkeyid);
                 if ($pr_key === FALSE)
                 {
@@ -172,7 +160,7 @@ abstract class Response extends \DomDocument
                         Log::instance()->error('Can not generate signature!');
                         return null;
                 }
-                
+
                 return strtoupper(bin2hex($sign));
         }
 }

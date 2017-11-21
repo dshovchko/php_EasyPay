@@ -512,7 +512,7 @@ EOD;
         /**
          * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -98
-         * @expectedExceptionMessage The file with the public key EasyPay was not find!
+         * @expectedExceptionMessage The file with the public key was not exists!
          */
         public function test_verify_sign_badfileEasySoftPKey()
         {

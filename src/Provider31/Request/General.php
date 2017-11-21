@@ -13,6 +13,7 @@ namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
 use EasyPay\Exception;
+use EasyPay\Key as Key;
 
 class General
 {
@@ -234,24 +235,7 @@ class General
                 {
                         throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
                 }
-                if ( ! file_exists($options['EasySoftPKey']))
-                {
-                        throw new Exception\Runtime('The file with the public key EasyPay was not find!', -98);
-                }
-
-                // this code is written according to the easysoft example
-
-                $fpkey = fopen($options['EasySoftPKey'], "rb");
-                if ($fpkey === FALSE)
-                {
-                        throw new Exception\Runtime('The file with the public key EasyPay was not open!', -97);
-                }
-                $pkeyid = fread($fpkey, 8192);
-                if ($pkeyid === FALSE)
-                {
-                        throw new Exception\Runtime('The file with the public key EasyPay was not read!', -97);
-                }
-                fclose($fpkey);
+                $pkeyid = (new Key())->get($options['EasySoftPKey'], 'public');
 
                 $pub_key = openssl_pkey_get_public($pkeyid);
                 if ($pub_key === FALSE)
