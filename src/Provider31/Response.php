@@ -43,6 +43,14 @@ abstract class Response extends \DomDocument
         self::loadXML(self::TEMPLATE);
 
         $this->Response = $this->firstChild;
+        $this->set_DateTime();
+    }
+
+    /**
+     *      Set DateTime element value by current time
+     */
+    public function set_DateTime()
+    {
         $this->setElementValue('DateTime', date('Y-m-d\TH:i:s', time()));
     }
 
@@ -55,17 +63,6 @@ abstract class Response extends \DomDocument
     public function createElement($name, $value=NULL)
     {
         return parent::createElement($name, $value);
-    }
-
-    /**
-     *      Create new node attribute
-     *
-     *      @param string $name
-     *      @param string $value
-     */
-    public function create_attr($name, $value)
-    {
-        return new DOMAttr($name, $value);
     }
 
     /**
