@@ -29,7 +29,7 @@ class Provider31
     protected static $cb;
 
     /**
-     *      @var Provider31\Request\Cancel|Provider31\Request\Check|Provider31\Request\Confirm|Provider31\Request\Payment
+     *      @var mixed
      */
     private $request;
 
