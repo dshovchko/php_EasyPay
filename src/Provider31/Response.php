@@ -40,7 +40,7 @@ abstract class Response extends \DomDocument
     {
         parent::__construct('1.0', 'UTF-8');
 
-        self::loadXML(self::TEMPLATE);
+        $this->loadXML(self::TEMPLATE);
 
         $this->Response = $this->firstChild;
         $this->set_DateTime();
@@ -125,7 +125,7 @@ abstract class Response extends \DomDocument
 
         if (isset($options['UseSign']) && ($options['UseSign'] === true))
         {
-            $this->Sign = self::createElement('Sign');
+            $this->Sign = $this->createElement('Sign');
             $this->Response->appendChild($this->Sign);
 
             $sign = $this->generate_sign($options);

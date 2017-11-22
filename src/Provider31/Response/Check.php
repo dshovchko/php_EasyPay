@@ -45,12 +45,12 @@ final class Check extends Response
 	{
 		if (isset($this->AccountInfo)) return;
 
-		$this->AccountInfo = self::createElement('AccountInfo');
+		$this->AccountInfo = $this->createElement('AccountInfo');
 		$this->Response->appendChild($this->AccountInfo);
 
 		foreach($accountinfo as $parameter=>$value)
 		{
-			$this->AccountInfo->appendChild(self::createElement($parameter, $value));
+			$this->AccountInfo->appendChild($this->createElement($parameter, $value));
 		}
 	}
 }
