@@ -24,14 +24,19 @@ class Provider31
     );
 
     /**
-     *      @var Callback
+     *      @var \EasyPay\Callback
      */
     protected static $cb;
 
     /**
-     *      @var Request\General
+     *      @var Provider31\Request\General
      */
     private $request;
+
+    /**
+     *      @var Provider31\Response
+     */
+    private $response;
 
     /**
      *      Provider31 constructor
@@ -40,7 +45,7 @@ class Provider31
      *      @param Callback $cb
      *      @param \Debulog\LoggerInterface $log
      */
-    public function __construct(array $options, Callback $cb, \Debulog\LoggerInterface $log)
+    public function __construct(array $options, \EasyPay\Callback $cb, \Debulog\LoggerInterface $log)
     {
         self::$options = array_merge(self::$options, $options);
         self::$cb = $cb;
