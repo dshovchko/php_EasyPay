@@ -19,7 +19,7 @@ final class Request
      *      static method to create a specific class of request
      *
      *      @return Request\General Request class of the appropriate type
-     *      @throws Exception\Structure
+     *      @throws \EasyPay\Exception\Structure
      */
     public static function get()
     {
@@ -42,7 +42,7 @@ final class Request
                 return new Request\Cancel($raw);
 
             default:
-                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
+                throw new \EasyPay\Exception\Structure('There is not supported value of Operation in xml-request!', -99);
         }
     }
 
