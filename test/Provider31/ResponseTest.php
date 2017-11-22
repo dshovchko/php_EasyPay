@@ -19,7 +19,7 @@ class ResponseStub extends Response
 {
     public function set_DateTime()
     {
-        $this->setElementValue('DateTime', date('Y-m-d\TH:i:s', 1501234567));
+        $this->setElementValue('DateTime', '2017-07-28T12:36:07');
     }
 }
 
