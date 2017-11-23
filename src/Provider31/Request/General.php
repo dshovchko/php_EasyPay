@@ -209,6 +209,11 @@ class General
         }
     }
 
+    /**
+     *      Validation of xml-element
+     *
+     *      @param string $name
+     */
     public function validate_element($name)
     {
         if ( ! isset($this->$name))
