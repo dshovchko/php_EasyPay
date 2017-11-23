@@ -445,6 +445,39 @@ EOD;
                 $r->validate_request($options);
         }
 
+        public function test_validate_element()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+  </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $r->validate_element('DateTime');
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Structure
+         * @expectedExceptionCode -57
+         * @expectedExceptionMessage There is no ServiceId element in the xml request!
+         */
+        public function test_validate_element_absent()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T11:11:11</DateTime>
+  <Sign></Sign>
+  <Check>
+  </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $r->validate_element('ServiceId');
+        }
+
         public function test_verify_sign_noUseSignOption()
         {
                 $raw =<<<EOD

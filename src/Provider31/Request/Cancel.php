@@ -20,17 +20,17 @@ class Cancel extends General
          *      @var string 'PaymentId' node
          */
         protected $PaymentId;
-        
+
         /**
          *      Check constructor
-         *      
+         *
          *      @param string $raw Raw request data
          */
         public function __construct($raw)
         {
                 parent::__construct($raw);
         }
-        
+
         /**
          *      Get PaymentId
          *
@@ -40,7 +40,7 @@ class Cancel extends General
         {
                 return $this->PaymentId;
         }
-        
+
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
@@ -48,11 +48,11 @@ class Cancel extends General
         protected function parse_request_data()
         {
                 parent::parse_request_data();
-                
+
                 $doc = new \DOMDocument();
                 $doc->loadXML($this->raw_request);
                 $r = $this->getNodes($doc, 'Cancel');
-                
+
                 foreach ($r[0]->childNodes as $child)
                 {
                         if ($child->nodeName == 'PaymentId')
@@ -61,7 +61,7 @@ class Cancel extends General
                         }
                 }
         }
-        
+
         /**
          *      validate Cancel request
          *
@@ -71,10 +71,7 @@ class Cancel extends General
         public function validate_request($options)
         {
                 parent::validate_request($options);
-                
-                if ( ! isset($this->PaymentId))
-                {
-                        throw new Exception\Structure('There is no PaymentId element in the xml request!', -57);
-                }
+
+                $this->validate_element('PaymentId');
         }
 }

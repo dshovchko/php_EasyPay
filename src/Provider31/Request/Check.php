@@ -20,17 +20,17 @@ class Check extends General
          *      @var string 'Account' node
          */
         protected $Account;
-        
+
         /**
          *      Check constructor
-         *      
+         *
          *      @param string $raw Raw request data
          */
         public function __construct($raw)
         {
                 parent::__construct($raw);
         }
-        
+
         /**
          *      Get Account
          *
@@ -40,7 +40,7 @@ class Check extends General
         {
                 return $this->Account;
         }
-        
+
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
@@ -48,11 +48,11 @@ class Check extends General
         protected function parse_request_data()
         {
                 parent::parse_request_data();
-                
+
                 $doc = new \DOMDocument();
                 $doc->loadXML($this->raw_request);
                 $r = $this->getNodes($doc, 'Check');
-                
+
                 foreach ($r[0]->childNodes as $child)
                 {
                         if ($child->nodeName == 'Account')
@@ -61,7 +61,7 @@ class Check extends General
                         }
                 }
         }
-        
+
         /**
          *      validate Check request
          *
@@ -71,10 +71,7 @@ class Check extends General
         public function validate_request($options)
         {
                 parent::validate_request($options);
-                
-                if ( ! isset($this->Account))
-                {
-                        throw new Exception\Structure('There is no Account element in the xml request!', -57);
-                }
+
+                $this->validate_element('Account');
         }
 }

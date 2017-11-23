@@ -20,27 +20,27 @@ class Payment extends General
          *      @var string 'Account' node
          */
         protected $Account;
-        
+
         /**
          *      @var string 'OrderId' node
          */
         protected $OrderId;
-        
+
         /**
          *      @var string 'Amount' node
          */
         protected $Amount;
-        
+
         /**
          *      Payment constructor
-         *      
+         *
          *      @param string $raw Raw request data
          */
         public function __construct($raw)
         {
                 parent::__construct($raw);
         }
-        
+
         /**
          *      Get Account
          *
@@ -50,7 +50,7 @@ class Payment extends General
         {
                 return $this->Account;
         }
-        
+
         /**
          *      Get OrderId
          *
@@ -60,7 +60,7 @@ class Payment extends General
         {
                 return $this->OrderId;
         }
-        
+
         /**
          *      Get Amount
          *
@@ -70,7 +70,7 @@ class Payment extends General
         {
                 return $this->Amount;
         }
-        
+
         /**
          *      Parse xml-request, which was previously "extracted" from the body of the http request
          *
@@ -78,11 +78,11 @@ class Payment extends General
         protected function parse_request_data()
         {
                 parent::parse_request_data();
-                
+
                 $doc = new \DOMDocument();
                 $doc->loadXML($this->raw_request);
                 $r = $this->getNodes($doc, 'Payment');
-                
+
                 foreach ($r[0]->childNodes as $child)
                 {
                         if ($child->nodeName == 'Account')
@@ -99,7 +99,7 @@ class Payment extends General
                         }
                 }
         }
-        
+
         /**
          *      validate Payment request
          *
@@ -109,18 +109,9 @@ class Payment extends General
         public function validate_request($options)
         {
                 parent::validate_request($options);
-                
-                if ( ! isset($this->Account))
-                {
-                        throw new Exception\Structure('There is no Account element in the xml request!', -57);
-                }
-                if ( ! isset($this->OrderId))
-                {
-                        throw new Exception\Structure('There is no OrderId element in the xml request!', -57);
-                }
-                if ( ! isset($this->Amount))
-                {
-                        throw new Exception\Structure('There is no Amount element in the xml request!', -57);
-                }
+
+                $this->validate_element('Account');
+                $this->validate_element('OrderId');
+                $this->validate_element('Amount');
         }
 }

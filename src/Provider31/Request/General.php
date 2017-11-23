@@ -17,271 +17,270 @@ use EasyPay\Key as Key;
 
 class General
 {
-        /**
-         *      @var string raw request
-         */
-        protected $raw_request;
+    /**
+     *      @var string raw request
+     */
+    protected $raw_request;
 
-        /**
-         *      @var string 'DateTime' node
-         */
-        protected $DateTime;
+    /**
+     *      @var string 'DateTime' node
+     */
+    protected $DateTime;
 
-        /**
-         *      @var string 'Sign' node
-         */
-        protected $Sign;
+    /**
+     *      @var string 'Sign' node
+     */
+    protected $Sign;
 
-        /**
-         *      @var string 'Operation' type
-         */
-        protected $Operation;
+    /**
+     *      @var string 'Operation' type
+     */
+    protected $Operation;
 
-        /**
-         *      @var string 'ServiceId' node
-         */
-        protected $ServiceId;
+    /**
+     *      @var string 'ServiceId' node
+     */
+    protected $ServiceId;
 
-        /**
-         *      @var array list of possible operations
-         */
-        protected $operations = array('Check','Payment','Confirm','Cancel');
+    /**
+     *      @var array list of possible operations
+     */
+    protected $operations = array('Check','Payment','Confirm','Cancel');
 
-        /**
-         *      General constructor
-         *
-         *      @param string $raw Raw request data
-         */
-        public function __construct($raw)
+    /**
+     *      General constructor
+     *
+     *      @param string $raw Raw request data
+     */
+    public function __construct($raw)
+    {
+        $this->raw_request = strval($raw);
+
+        $this->parse_request_data();
+    }
+
+    /**
+     *      Get DateTime
+     *
+     *      @return string
+     */
+    public function DateTime()
+    {
+        return $this->DateTime;
+    }
+
+    /**
+     *      Get Sign
+     *
+     *      @return string
+     */
+    public function Sign()
+    {
+        return $this->Sign;
+    }
+
+    /**
+     *      Get Operation type
+     *
+     *      @return string
+     */
+    public function Operation()
+    {
+        return $this->Operation;
+    }
+
+    /**
+     *      Get ServiceId
+     *
+     *      @return string
+     */
+    public function ServiceId()
+    {
+        return $this->ServiceId;
+    }
+
+    /**
+     *      Parse xml-request, which was previously "extracted" from the body of the http request
+     *
+     *      @throws Exception\Structure
+     */
+    protected function parse_request_data()
+    {
+        if (empty($this->raw_request))
         {
-                $this->raw_request = strval($raw);
-
-                $this->parse_request_data();
+            throw new Exception\Structure('An empty xml request', -50);
         }
 
-        /**
-         *      Get DateTime
-         *
-         *      @return string
-         */
-        public function DateTime()
+        libxml_use_internal_errors(true);
+        $doc = new \DOMDocument();
+        if ( ! $doc->loadXML($this->raw_request))
         {
-                return $this->DateTime;
+            foreach(libxml_get_errors() as $e){
+                Log::instance()->error($e->message);
+            }
+            throw new Exception\Structure('The wrong XML is received', -51);
         }
 
-        /**
-         *      Get Sign
-         *
-         *      @return string
-         */
-        public function Sign()
+        // process <Request> group
+        $r = $this->getNodes($doc, 'Request');
+
+        if (count($r) < 1)
         {
-                return $this->Sign;
+            throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
         }
 
-        /**
-         *      Get Operation type
-         *
-         *      @return string
-         */
-        public function Operation()
+        foreach ($r[0]->childNodes as $child)
         {
-                return $this->Operation;
-        }
-
-        /**
-         *      Get ServiceId
-         *
-         *      @return string
-         */
-        public function ServiceId()
-        {
-                return $this->ServiceId;
-        }
-
-        /**
-         *      Parse xml-request, which was previously "extracted" from the body of the http request
-         *
-         *      @throws Exception\Structure
-         */
-        protected function parse_request_data()
-        {
-                if (empty($this->raw_request))
-                {
-                        throw new Exception\Structure('An empty xml request', -50);
-                }
-
-                libxml_use_internal_errors(true);
-                $doc = new \DOMDocument();
-                if ( ! $doc->loadXML($this->raw_request))
-                {
-                        foreach(libxml_get_errors() as $e){
-                                Log::instance()->error($e->message);
-                        }
-                        throw new Exception\Structure('The wrong XML is received', -51);
-                }
-
-                // process <Request> group
-                $r = $this->getNodes($doc, 'Request');
-
-                if (count($r) < 1)
-                {
-                        throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
-                }
-
-                foreach ($r[0]->childNodes as $child)
-                {
-                        if ($child->nodeName == 'DateTime')
-                        {
-                                $this->parse_request_node($child, 'DateTime');
-                        }
-                        elseif ($child->nodeName == 'Sign')
-                        {
-                                $this->parse_request_node($child, 'Sign');
-                        }
-                        elseif (in_array($child->nodeName, $this->operations))
-                        {
-                                if ( ! isset($this->Operation))
-                                {
-                                        $this->Operation = $child->nodeName;
-                                }
-                                else
-                                {
-                                        throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
-                                }
-                        }
-                }
-
+            if ($child->nodeName == 'DateTime')
+            {
+                $this->parse_request_node($child, 'DateTime');
+            }
+            elseif ($child->nodeName == 'Sign')
+            {
+                $this->parse_request_node($child, 'Sign');
+            }
+            elseif (in_array($child->nodeName, $this->operations))
+            {
                 if ( ! isset($this->Operation))
                 {
-                        throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
-                }
-
-                // process <Operation> group
-                $r = $this->getNodes($doc, $this->Operation);
-
-                foreach ($r[0]->childNodes as $child)
-                {
-                        if ($child->nodeName == 'ServiceId')
-                        {
-                                $this->parse_request_node($child, 'ServiceId');
-                        }
-                }
-        }
-
-        /**
-         *      Parse node of request
-         *
-         *      @param \DOMNode $n
-         *      @param string $name
-         *
-         *      @throws Exception\Structure
-         */
-        protected function parse_request_node($n, $name)
-        {
-                if ( ! isset($this->$name))
-                {
-                        $this->$name = $n->nodeValue;
+                    $this->Operation = $child->nodeName;
                 }
                 else
                 {
-                        throw new Exception\Structure('There is more than one '.$name.' element in the xml-query!', -56);
+                    throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
                 }
+            }
         }
 
-        /**
-         *      "Rough" validation of the received xml request
-         *
-         *      @param array $options
-         *      @throws Exception\Data
-         *      @throws Exception\Structure
-         */
-        public function validate_request($options)
+        if ( ! isset($this->Operation))
         {
-                if ( ! isset($this->DateTime))
-                {
-                        throw new Exception\Structure('There is no DateTime element in the xml request!', -57);
-                }
-                if ( ! isset($this->Sign))
-                {
-                        throw new Exception\Structure('There is no Sign element in the xml request!', -57);
-                }
-                if ( ! isset($this->ServiceId))
-                {
-                        throw new Exception\Structure('There is no ServiceId element in the xml request!', -57);
-                }
-
-                // compare received value ServiceId with option ServiceId
-                if (intval($options['ServiceId']) != intval($this->ServiceId))
-                {
-                        throw new Exception\Data('This request is not for our ServiceId!', -58);
-                }
+            throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
         }
 
-        /**
-         *      Verify signature of request
-         *
-         *      @param array $options
-         *      @throws Exception\Runtime
-         *      @throws Exception\Sign
-         */
-        public function verify_sign($options)
+        // process <Operation> group
+        $r = $this->getNodes($doc, $this->Operation);
+
+        foreach ($r[0]->childNodes as $child)
         {
-                if (!isset($options['UseSign']) || ($options['UseSign'] === false))
-                {
-                        return null;
-                }
-                if ( ! isset($options['EasySoftPKey']))
-                {
-                        throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
-                }
-                $pkeyid = (new Key())->get($options['EasySoftPKey'], 'public');
-
-                $pub_key = openssl_pkey_get_public($pkeyid);
-                if ($pub_key === FALSE)
-                {
-                        throw new Exception\Runtime('Can not extract the public key from certificate!', -97);
-                }
-                $bin_sign = pack("H*", $this->Sign);
-                $xml = str_replace($this->Sign, '', $this->raw_request);
-                $check = openssl_verify($xml, $bin_sign, $pub_key);
-                if ($check == -1)
-                {
-                        throw new Exception\Sign('Error verify signature of request!', -96);
-                }
-                elseif ($check == 0)
-                {
-                        throw new Exception\Sign('Signature of request is incorrect!', -95);
-                }
+            if ($child->nodeName == 'ServiceId')
+            {
+                $this->parse_request_node($child, 'ServiceId');
+            }
         }
+    }
 
-        /**
-         *      Selects nodes by name
-         *
-         *      @param \DOMDocument $dom
-         *      @param string $name
-         *      @param array $ret
-         *
-         *      @return array nodes with the name
-         */
-        protected function getNodes($dom, $name, $ret=array())
+    /**
+     *      Parse node of request
+     *
+     *      @param \DOMNode $n
+     *      @param string $name
+     *
+     *      @throws Exception\Structure
+     */
+    protected function parse_request_node($n, $name)
+    {
+        if ( ! isset($this->$name))
         {
-                foreach($dom->childNodes as $child)
-                {
-                        if ($child->nodeName == $name)
-                        {
-                                array_push($ret, $child);
-                        }
-                        else
-                        {
-                                if (count($child->childNodes) > 0)
-                                {
-                                        $ret = $this->getNodes($child, $name, $ret);
-                                }
-                        }
-                }
-
-                return $ret;
+            $this->$name = $n->nodeValue;
         }
+        else
+        {
+            throw new Exception\Structure('There is more than one '.$name.' element in the xml-query!', -56);
+        }
+    }
+
+    /**
+     *      "Rough" validation of the received xml request
+     *
+     *      @param array $options
+     *      @throws Exception\Data
+     *      @throws Exception\Structure
+     */
+    public function validate_request($options)
+    {
+        $this->validate_element('DateTime');
+        $this->validate_element('Sign');
+        $this->validate_element('ServiceId');
+
+        // compare received value ServiceId with option ServiceId
+        if (intval($options['ServiceId']) != intval($this->ServiceId))
+        {
+            throw new Exception\Data('This request is not for our ServiceId!', -58);
+        }
+    }
+
+    public function validate_element($name)
+    {
+        if ( ! isset($this->$name))
+        {
+            throw new Exception\Structure('There is no '.$name.' element in the xml request!', -57);
+        }
+    }
+
+    /**
+     *      Verify signature of request
+     *
+     *      @param array $options
+     *      @throws Exception\Runtime
+     *      @throws Exception\Sign
+     */
+    public function verify_sign($options)
+    {
+        if (!isset($options['UseSign']) || ($options['UseSign'] === false))
+        {
+            return null;
+        }
+        if ( ! isset($options['EasySoftPKey']))
+        {
+            throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
+        }
+        $pkeyid = (new Key())->get($options['EasySoftPKey'], 'public');
+
+        $pub_key = openssl_pkey_get_public($pkeyid);
+        if ($pub_key === FALSE)
+        {
+            throw new Exception\Runtime('Can not extract the public key from certificate!', -97);
+        }
+        $bin_sign = pack("H*", $this->Sign);
+        $xml = str_replace($this->Sign, '', $this->raw_request);
+        $check = openssl_verify($xml, $bin_sign, $pub_key);
+        if ($check == -1)
+        {
+            throw new Exception\Sign('Error verify signature of request!', -96);
+        }
+        elseif ($check == 0)
+        {
+            throw new Exception\Sign('Signature of request is incorrect!', -95);
+        }
+    }
+
+    /**
+     *      Selects nodes by name
+     *
+     *      @param \DOMDocument $dom
+     *      @param string $name
+     *      @param array $ret
+     *
+     *      @return array nodes with the name
+     */
+    protected function getNodes($dom, $name, $ret=array())
+    {
+        foreach($dom->childNodes as $child)
+        {
+            if ($child->nodeName == $name)
+            {
+                array_push($ret, $child);
+            }
+            else
+            {
+                if (count($child->childNodes) > 0)
+                {
+                    $ret = $this->getNodes($child, $name, $ret);
+                }
+            }
+        }
+
+        return $ret;
+    }
 
 }
