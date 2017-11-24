@@ -92,27 +92,42 @@ abstract class Response extends \DomDocument
     {
         $this->encoding = 'UTF-8';
         $this->formatOutput = true;
-        //$this->save('/tmp/test1.xml');
 
         return $this->saveXML(NULL, LIBXML_NOEMPTYTAG);
     }
 
     /**
-     *      Send response
+     *      Sign and send response
      *
      *      @param array $options
      */
-    public function out($options)
+    public function sign_and_out($options)
     {
         $this->sign($options);
+        $this->out_header();
+        $this->out_body($this->friendly());
+    }
 
-        Log::instance()->debug('response sends: ');
-        Log::instance()->debug($this->friendly());
-
+    /**
+     *      Send header
+     */
+    protected function out_header()
+    {
         ob_clean();
         header("Content-Type: text/xml; charset=utf-8");
-        echo $this->friendly();
-        exit;
+    }
+
+    /**
+     *      Send body
+     *
+     *      @param string $body
+     */
+    protected function out_body($body)
+    {
+        Log::instance()->debug('response sends: ');
+        Log::instance()->debug($body);
+
+        echo $body;
     }
 
     /**

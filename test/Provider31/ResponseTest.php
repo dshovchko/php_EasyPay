@@ -21,6 +21,11 @@ class ResponseStub extends Response
     {
         $this->setElementValue('DateTime', '2017-07-28T12:36:07');
     }
+
+    protected function out_header()
+    {
+	    echo null;
+    }
 }
 
 class ResponseTest extends ResponseTestCase
@@ -219,5 +224,23 @@ class ResponseTest extends ResponseTestCase
         $stub = $this->getMockForAbstractClass('\EasyPay\Provider31\Response');
 
         $this->invokeMethod($stub, 'check_sign_result', array(false));
+    }
+
+    public function test_out()
+    {
+        $stub = new ResponseStub();
+        $raw =<<<EOD
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <StatusCode></StatusCode>
+  <StatusDetail></StatusDetail>
+  <DateTime>2017-07-28T12:36:07</DateTime>
+</Response>
+
+EOD;
+
+        $this->expectOutputString($raw);
+
+        $stub->sign_and_out(array());
     }
 }

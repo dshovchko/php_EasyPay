@@ -96,6 +96,7 @@ class Provider31
 
         //      output response
         $this->response->out(self::$options);
+        exit;
     }
 
     /**
