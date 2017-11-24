@@ -226,29 +226,74 @@ class General
      *      Verify signature of request
      *
      *      @param array $options
-     *      @throws Exception\Runtime
-     *      @throws Exception\Sign
      */
     public function verify_sign($options)
     {
-        if (!isset($options['UseSign']) || ($options['UseSign'] === false))
+        if (isset($options['UseSign']) && ($options['UseSign'] === true))
         {
-            return null;
+            $this->openssl_verify_sign($options);
         }
-        if ( ! isset($options['EasySoftPKey']))
-        {
-            throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
-        }
-        $pkeyid = (new Key())->get($options['EasySoftPKey'], 'public');
+    }
 
-        $pub_key = openssl_pkey_get_public($pkeyid);
+    /**
+     *      openssl get public key
+     *
+     *      @param array $options
+     *      @throws Exception\Runtime
+     *      @return resource
+     */
+    protected function openssl_get_pub_key($options)
+    {
+        $pub_key = openssl_pkey_get_public($this->get_pub_key($options));
         if ($pub_key === FALSE)
         {
             throw new Exception\Runtime('Can not extract the public key from certificate!', -97);
         }
+
+        return $pub_key;
+    }
+
+    /**
+     *      load file with easysoft public key
+     *
+     *      @param array $options
+     *      @throws Exception\Runtime
+     *      @return string
+     */
+    protected function get_pub_key($options)
+    {
+        if ( ! isset($options['EasySoftPKey']))
+        {
+            throw new Exception\Runtime('The parameter EasySoftPKey is not set!', -94);
+        }
+
+        return (new Key())->get($options['EasySoftPKey'], 'public');
+    }
+
+    /**
+     *      openssl verify signature of request
+     *
+     *      @param array $options
+     *      @return integer result of checking
+     */
+    protected function openssl_verify($options)
+    {
         $bin_sign = pack("H*", $this->Sign);
         $xml = str_replace($this->Sign, '', $this->raw_request);
-        $check = openssl_verify($xml, $bin_sign, $pub_key);
+
+        return openssl_verify($xml, $bin_sign, $this->openssl_get_pub_key($options));
+    }
+
+    /**
+     *      check openssl verify signature of request
+     *
+     *      @param array $options
+     *      @throws Exception\Sign
+     */
+    protected function openssl_verify_sign($options)
+    {
+        $check = $this->openssl_verify($options);
+
         if ($check == -1)
         {
             throw new Exception\Sign('Error verify signature of request!', -96);
