@@ -571,7 +571,7 @@ EOD;
         /**
          * @expectedException EasyPay\Exception\Runtime
          * @expectedExceptionCode -97
-         * @expectedExceptionMessage Can not extract the public key from certificate!
+         * @expectedExceptionMessage Can not extract key from certificate!
          */
         public function test_verify_sign_corruptedfileEasySoftPKey()
         {
@@ -639,6 +639,109 @@ EOD;
                 );
                 $r = new General($raw);
                 $r->verify_sign($options);
+        }
+
+        public function test_get_pub_key()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T12:00:00</DateTime>
+  <Sign></Sign>
+  <Check>
+    <ServiceId>256</ServiceId>
+    <Account>1024256</Account>
+  </Check>
+</Request>
+EOD;
+                $options = array(
+                        'ServiceId' => 256,
+                        'UseSign' => true,
+                        'EasySoftPKey' => dirname(__FILE__).'/../../files/php_easypay.cer'
+                );
+                $r = new General($raw);
+
+                $this->assertEquals(
+                    file_get_contents(dirname(__FILE__).'/../../files/php_easypay.cer'),
+                    $this->invokeMethod($r, 'get_pub_key', array($options))
+                );
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Runtime
+         * @expectedExceptionCode -94
+         * @expectedExceptionMessage The parameter EasySoftPKey is not set!
+         */
+        public function test_get_pub_key_exception()
+        {
+                $raw =<<<EOD
+<Request>
+  <DateTime>2017-10-01T12:00:00</DateTime>
+  <Sign></Sign>
+  <Check>
+    <ServiceId>256</ServiceId>
+    <Account>1024256</Account>
+  </Check>
+</Request>
+EOD;
+                $options = array(
+                        'ServiceId' => 256,
+                        'UseSign' => true,
+                );
+                $r = new General($raw);
+
+                $this->invokeMethod($r, 'get_pub_key', array($options));
+        }
+
+        public function test_check_verify_sign_result()
+        {
+                $raw =<<<EOD
+<Request>
+        <DateTime>2017-10-01T11:11:11</DateTime>
+        <Sign></Sign>
+        <Check>
+        </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $this->invokeMethod($r, 'check_verify_sign_result', array(1));
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Sign
+         * @expectedExceptionCode -95
+         * @expectedExceptionMessage Signature of request is incorrect!
+         */
+        public function test_check_verify_sign_result_exception_95()
+        {
+                $raw =<<<EOD
+<Request>
+        <DateTime>2017-10-01T11:11:11</DateTime>
+        <Sign></Sign>
+        <Check>
+        </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $this->invokeMethod($r, 'check_verify_sign_result', array(0));
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Sign
+         * @expectedExceptionCode -96
+         * @expectedExceptionMessage Error verify signature of request!
+         */
+        public function test_check_verify_sign_result_exception_96()
+        {
+                $raw =<<<EOD
+<Request>
+        <DateTime>2017-10-01T11:11:11</DateTime>
+        <Sign></Sign>
+        <Check>
+        </Check>
+</Request>
+EOD;
+                $r = new General($raw);
+                $this->invokeMethod($r, 'check_verify_sign_result', array(-1));
         }
 
 }

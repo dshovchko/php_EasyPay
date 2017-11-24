@@ -14,6 +14,7 @@ namespace EasyPay\Provider31\Request;
 use EasyPay\Log as Log;
 use EasyPay\Exception;
 use EasyPay\Key as Key;
+use EasyPay\OpenSSL as OpenSSL;
 
 class General
 {
@@ -231,26 +232,14 @@ class General
     {
         if (isset($options['UseSign']) && ($options['UseSign'] === true))
         {
-            $this->openssl_verify_sign($options);
+            $this->check_verify_sign_result(
+                $result = (new OpenSSL())->verify(
+                    str_replace($this->Sign, '', $this->raw_request),
+                    pack("H*", $this->Sign),
+                    (new OpenSSL())->get_pub_key($this->get_pub_key($options))
+                )
+            );
         }
-    }
-
-    /**
-     *      openssl get public key
-     *
-     *      @param array $options
-     *      @throws Exception\Runtime
-     *      @return resource
-     */
-    protected function openssl_get_pub_key($options)
-    {
-        $pub_key = openssl_pkey_get_public($this->get_pub_key($options));
-        if ($pub_key === FALSE)
-        {
-            throw new Exception\Runtime('Can not extract the public key from certificate!', -97);
-        }
-
-        return $pub_key;
     }
 
     /**
@@ -271,34 +260,18 @@ class General
     }
 
     /**
-     *      openssl verify signature of request
+     *      check result of openssl verify signature
      *
-     *      @param array $options
-     *      @return integer result of checking
-     */
-    protected function openssl_verify($options)
-    {
-        $bin_sign = pack("H*", $this->Sign);
-        $xml = str_replace($this->Sign, '', $this->raw_request);
-
-        return openssl_verify($xml, $bin_sign, $this->openssl_get_pub_key($options));
-    }
-
-    /**
-     *      check openssl verify signature of request
-     *
-     *      @param array $options
+     *      @param integer $result
      *      @throws Exception\Sign
      */
-    protected function openssl_verify_sign($options)
+    protected function check_verify_sign_result($result)
     {
-        $check = $this->openssl_verify($options);
-
-        if ($check == -1)
+        if ($result == -1)
         {
             throw new Exception\Sign('Error verify signature of request!', -96);
         }
-        elseif ($check == 0)
+        elseif ($result == 0)
         {
             throw new Exception\Sign('Signature of request is incorrect!', -95);
         }
