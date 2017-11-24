@@ -95,7 +95,7 @@ class Provider31
         }
 
         //      output response
-        $this->response->out(self::$options);
+        $this->response->sign_and_out(self::$options);
         exit;
     }
 

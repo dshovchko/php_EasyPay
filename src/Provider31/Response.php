@@ -114,7 +114,7 @@ abstract class Response extends \DomDocument
     protected function out_header()
     {
         ob_clean();
-        header("Content-Type: text/xml; charset=utf-8");
+        @header("Content-Type: text/xml; charset=utf-8");
     }
 
     /**

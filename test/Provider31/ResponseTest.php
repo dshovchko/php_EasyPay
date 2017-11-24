@@ -21,11 +21,6 @@ class ResponseStub extends Response
     {
         $this->setElementValue('DateTime', '2017-07-28T12:36:07');
     }
-
-    protected function out_header()
-    {
-	    echo null;
-    }
 }
 
 class ResponseTest extends ResponseTestCase
