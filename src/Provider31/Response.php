@@ -13,6 +13,7 @@ namespace EasyPay\Provider31;
 
 use EasyPay\Log as Log;
 use EasyPay\Key as Key;
+use EasyPay\OpenSSL as OpenSSL;
 
 abstract class Response extends \DomDocument
 {
@@ -142,32 +143,53 @@ abstract class Response extends \DomDocument
      */
     public function generate_sign($options)
     {
-        if ( ! isset($options['ProviderPKey']))
-        {
-            Log::instance()->error('The parameter ProviderPKey is not set!');
-            return null;
-        }
         try
         {
-            $pkeyid = (new Key())->get($options['ProviderPKey'], 'private');
+            $sign = '';
+            $this->check_sign_result(
+                $result = (new OpenSSL())->sign(
+                    $this->friendly(),
+                    $sign,
+                    (new OpenSSL())->get_priv_key($this->get_priv_key($options))
+                )
+            );
+
+            return strtoupper(bin2hex($sign));
         }
         catch (\Exception $e)
         {
             return null;
         }
+    }
 
-        $pr_key = openssl_pkey_get_private($pkeyid);
-        if ($pr_key === FALSE)
+    /**
+     *      load file with provider private key
+     *
+     *      @param array $options
+     *      @throws Exception\Runtime
+     *      @return string
+     */
+    protected function get_priv_key($options)
+    {
+        if ( ! isset($options['ProviderPKey']))
         {
-            Log::instance()->error('Can not extract the private key from certificate!');
-            return null;
-        }
-        if (openssl_sign($this->friendly(), $sign, $pr_key) === FALSE)
-        {
-            Log::instance()->error('Can not generate signature!');
-            return null;
+            throw new \EasyPay\Exception\Runtime('The parameter ProviderPKey is not set!', -94);
         }
 
-        return strtoupper(bin2hex($sign));
+        return (new Key())->get($options['ProviderPKey'], 'private');
+    }
+
+    /**
+     *      check result of openssl sign
+     *
+     *      @param bool $result
+     *      @throws Exception\Sign
+     */
+    protected function check_sign_result($result)
+    {
+        if ($result === FALSE)
+        {
+            throw new \EasyPay\Exception\Sign('Can not generate signature!', -96);
+        }
     }
 }

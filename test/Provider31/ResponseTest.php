@@ -172,4 +172,52 @@ class ResponseTest extends ResponseTestCase
         );
         $this->assertNULL($stub->generate_sign($options));
     }
+
+    public function test_get_priv_key()
+    {
+        $stub = $this->getMockForAbstractClass('\EasyPay\Provider31\Response');
+
+        $options = array(
+            'ProviderPKey' => dirname(__FILE__).'/../files/php_easypay.ppk',
+        );
+        $this->assertEquals(
+            file_get_contents(dirname(__FILE__).'/../files/php_easypay.ppk'),
+            $this->invokeMethod($stub, 'get_priv_key', array($options))
+        );
+    }
+
+    /**
+     * @expectedException EasyPay\Exception\Runtime
+     * @expectedExceptionCode -94
+     * @expectedExceptionMessage The parameter ProviderPKey is not set!
+     */
+    public function test_get_priv_key_exception()
+    {
+        $stub = $this->getMockForAbstractClass('\EasyPay\Provider31\Response');
+
+        $options = array();
+        $this->assertEquals(
+            file_get_contents(dirname(__FILE__).'/../files/php_easypay.ppk'),
+            $this->invokeMethod($stub, 'get_priv_key', array($options))
+        );
+    }
+
+    public function test_check_sign_result()
+    {
+        $stub = $this->getMockForAbstractClass('\EasyPay\Provider31\Response');
+
+        $this->invokeMethod($stub, 'check_sign_result', array(true));
+    }
+
+    /**
+     * @expectedException EasyPay\Exception\Sign
+     * @expectedExceptionCode -96
+     * @expectedExceptionMessage Can not generate signature!
+     */
+    public function test_check_sign_result_exception()
+    {
+        $stub = $this->getMockForAbstractClass('\EasyPay\Provider31\Response');
+
+        $this->invokeMethod($stub, 'check_sign_result', array(false));
+    }
 }
