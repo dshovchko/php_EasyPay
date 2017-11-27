@@ -112,18 +112,8 @@ class General
             throw new Exception\Structure('An empty xml request', -50);
         }
 
-        libxml_use_internal_errors(true);
-        $doc = new \DOMDocument();
-        if ( ! $doc->loadXML($this->raw_request))
-        {
-            foreach(libxml_get_errors() as $e){
-                Log::instance()->error($e->message);
-            }
-            throw new Exception\Structure('The wrong XML is received', -51);
-        }
-
         // process <Request> group
-        $r = $this->getNodes($doc, 'Request');
+        $r = $this->get_nodes_from_request('Request');
 
         if (count($r) < 1)
         {
@@ -154,12 +144,33 @@ class General
         }
 
         // process <Operation> group
-        $r = $this->getNodes($doc, $this->Operation);
+        $r = $this->get_nodes_from_request($this->Operation);
 
         foreach ($r[0]->childNodes as $child)
         {
             $this->check_and_parse_request_node($child, 'ServiceId');
         }
+    }
+
+    /**
+     *      Get group of nodes from XML-request
+     *
+     *      @param string $name
+     *      @return array
+     */
+    protected function get_nodes_from_request($name)
+    {
+        libxml_use_internal_errors(true);
+        $doc = new \DOMDocument();
+        if ( ! $doc->loadXML($this->raw_request))
+        {
+            foreach(libxml_get_errors() as $e){
+                Log::instance()->error($e->message);
+            }
+            throw new Exception\Structure('The wrong XML is received', -51);
+        }
+
+        return $this->getNodes($doc, $name);
     }
 
     /**

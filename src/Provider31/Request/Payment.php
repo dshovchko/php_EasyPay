@@ -79,9 +79,7 @@ class Payment extends General
     {
         parent::parse_request_data();
 
-        $doc = new \DOMDocument();
-        $doc->loadXML($this->raw_request);
-        $r = $this->getNodes($doc, 'Payment');
+        $r = $this->get_nodes_from_request('Payment');
 
         foreach ($r[0]->childNodes as $child)
         {
