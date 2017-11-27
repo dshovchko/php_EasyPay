@@ -132,15 +132,10 @@ class General
 
         foreach ($r[0]->childNodes as $child)
         {
-            if ($child->nodeName == 'DateTime')
-            {
-                $this->parse_request_node($child, 'DateTime');
-            }
-            elseif ($child->nodeName == 'Sign')
-            {
-                $this->parse_request_node($child, 'Sign');
-            }
-            elseif (in_array($child->nodeName, $this->operations))
+            $this->check_and_parse_request_node($child, 'DateTime');
+            $this->check_and_parse_request_node($child, 'Sign');
+
+            if (in_array($child->nodeName, $this->operations))
             {
                 if ( ! isset($this->Operation))
                 {
@@ -163,10 +158,21 @@ class General
 
         foreach ($r[0]->childNodes as $child)
         {
-            if ($child->nodeName == 'ServiceId')
-            {
-                $this->parse_request_node($child, 'ServiceId');
-            }
+            $this->check_and_parse_request_node($child, 'ServiceId');
+        }
+    }
+
+    /**
+     *      Check if present node of request and then parse it
+     *
+     *      @param \DOMNode $n
+     *      @param string $name
+     */
+    protected function check_and_parse_request_node($n, $name)
+    {
+        if ($n->nodeName == $name)
+        {
+            $this->parse_request_node($n, $name);
         }
     }
 

@@ -16,62 +16,59 @@ use EasyPay\Exception;
 
 class Cancel extends General
 {
-        /**
-         *      @var string 'PaymentId' node
-         */
-        protected $PaymentId;
+    /**
+     *      @var string 'PaymentId' node
+     */
+    protected $PaymentId;
 
-        /**
-         *      Check constructor
-         *
-         *      @param string $raw Raw request data
-         */
-        public function __construct($raw)
+    /**
+     *      Check constructor
+     *
+     *      @param string $raw Raw request data
+     */
+    public function __construct($raw)
+    {
+        parent::__construct($raw);
+    }
+
+    /**
+     *      Get PaymentId
+     *
+     *      @return string
+     */
+    public function PaymentId()
+    {
+        return $this->PaymentId;
+    }
+
+    /**
+     *      Parse xml-request, which was previously "extracted" from the body of the http request
+     *
+     */
+    protected function parse_request_data()
+    {
+        parent::parse_request_data();
+
+        $doc = new \DOMDocument();
+        $doc->loadXML($this->raw_request);
+        $r = $this->getNodes($doc, 'Cancel');
+
+        foreach ($r[0]->childNodes as $child)
         {
-                parent::__construct($raw);
+            $this->check_and_parse_request_node($child, 'PaymentId');
         }
+    }
 
-        /**
-         *      Get PaymentId
-         *
-         *      @return string
-         */
-        public function PaymentId()
-        {
-                return $this->PaymentId;
-        }
+    /**
+     *      validate Cancel request
+     *
+     *      @param array $options
+     *      @throws Exception\Structure
+     */
+    public function validate_request($options)
+    {
+        parent::validate_request($options);
 
-        /**
-         *      Parse xml-request, which was previously "extracted" from the body of the http request
-         *
-         */
-        protected function parse_request_data()
-        {
-                parent::parse_request_data();
-
-                $doc = new \DOMDocument();
-                $doc->loadXML($this->raw_request);
-                $r = $this->getNodes($doc, 'Cancel');
-
-                foreach ($r[0]->childNodes as $child)
-                {
-                        if ($child->nodeName == 'PaymentId')
-                        {
-                                $this->parse_request_node($child, 'PaymentId');
-                        }
-                }
-        }
-
-        /**
-         *      validate Cancel request
-         *
-         *      @param array $options
-         *      @throws Exception\Structure
-         */
-        public function validate_request($options)
-        {
-                parent::validate_request($options);
-
-                $this->validate_element('PaymentId');
-        }
+        $this->validate_element('PaymentId');
+    }
 }

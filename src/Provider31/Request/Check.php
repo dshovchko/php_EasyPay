@@ -16,62 +16,59 @@ use EasyPay\Exception;
 
 class Check extends General
 {
-        /**
-         *      @var string 'Account' node
-         */
-        protected $Account;
+    /**
+     *      @var string 'Account' node
+     */
+    protected $Account;
 
-        /**
-         *      Check constructor
-         *
-         *      @param string $raw Raw request data
-         */
-        public function __construct($raw)
+    /**
+     *      Check constructor
+     *
+     *      @param string $raw Raw request data
+     */
+    public function __construct($raw)
+    {
+        parent::__construct($raw);
+    }
+
+    /**
+     *      Get Account
+     *
+     *      @return string
+     */
+    public function Account()
+    {
+        return $this->Account;
+    }
+
+    /**
+     *      Parse xml-request, which was previously "extracted" from the body of the http request
+     *
+     */
+    protected function parse_request_data()
+    {
+        parent::parse_request_data();
+
+        $doc = new \DOMDocument();
+        $doc->loadXML($this->raw_request);
+        $r = $this->getNodes($doc, 'Check');
+
+        foreach ($r[0]->childNodes as $child)
         {
-                parent::__construct($raw);
+            $this->check_and_parse_request_node($child, 'Account');
         }
+    }
 
-        /**
-         *      Get Account
-         *
-         *      @return string
-         */
-        public function Account()
-        {
-                return $this->Account;
-        }
+    /**
+     *      validate Check request
+     *
+     *      @param array $options
+     *      @throws Exception\Structure
+     */
+    public function validate_request($options)
+    {
+        parent::validate_request($options);
 
-        /**
-         *      Parse xml-request, which was previously "extracted" from the body of the http request
-         *
-         */
-        protected function parse_request_data()
-        {
-                parent::parse_request_data();
-
-                $doc = new \DOMDocument();
-                $doc->loadXML($this->raw_request);
-                $r = $this->getNodes($doc, 'Check');
-
-                foreach ($r[0]->childNodes as $child)
-                {
-                        if ($child->nodeName == 'Account')
-                        {
-                                $this->parse_request_node($child, 'Account');
-                        }
-                }
-        }
-
-        /**
-         *      validate Check request
-         *
-         *      @param array $options
-         *      @throws Exception\Structure
-         */
-        public function validate_request($options)
-        {
-                parent::validate_request($options);
-
-                $this->validate_element('Account');
-        }
+        $this->validate_element('Account');
+    }
 }
