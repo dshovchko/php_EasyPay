@@ -107,10 +107,7 @@ class General
      */
     protected function parse_request_data()
     {
-        if (empty($this->raw_request))
-        {
-            throw new Exception\Structure('An empty xml request', -50);
-        }
+        $this->check_presence_request();
 
         // process <Request> group
         $r = $this->get_nodes_from_request('Request');
@@ -149,6 +146,19 @@ class General
         foreach ($r[0]->childNodes as $child)
         {
             $this->check_and_parse_request_node($child, 'ServiceId');
+        }
+    }
+
+    /**
+     *      Check if presence request
+     *
+     *      @throws Exception\Structure
+     */
+    protected function check_presence_request()
+    {
+        if (empty($this->raw_request))
+        {
+            throw new Exception\Structure('An empty xml request', -50);
         }
     }
 
