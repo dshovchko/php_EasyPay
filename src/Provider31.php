@@ -109,26 +109,26 @@ class Provider31
         switch ($this->request->Operation())
         {
             case 'Check':
-
-                return $this->response_check();
+                $response = $this->response_check();
+                break;
 
             case 'Payment':
-
-                return $this->response_payment();
+                $response = $this->response_payment();
+                break;
 
             case 'Confirm':
-
-                return $this->response_confirm();
+                $response = $this->response_confirm();
+                break;
 
             case 'Cancel';
-
-                return $this->response_cancel();
+                $response = $this->response_cancel();
+                break;
 
             default:
-                break;
+                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
         }
 
-        throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
+        return $response;
     }
 
     /**
