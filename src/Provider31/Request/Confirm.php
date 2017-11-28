@@ -49,7 +49,7 @@ class Confirm extends General
     {
         parent::parse_request_data();
 
-        $r = $this->get_nodes_from_request('Confirm');
+        $r = $this->raw_request->get_nodes_from_request('Confirm');
 
         foreach ($r[0]->childNodes as $child)
         {

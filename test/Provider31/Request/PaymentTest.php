@@ -13,12 +13,33 @@ namespace EasyPayTest\Provider31;
 
 use EasyPayTest\TestCase;
 use EasyPay\Provider31\Request\Payment;
+use EasyPay\Provider31\Request\RAW;
 
 class PaymentTest extends TestCase
 {
-        public function test_Account()
-        {
-                $raw =<<<EOD
+    public function SetUp()
+    {
+        $existed = in_array('php', stream_get_wrappers());
+        if ($existed) {
+            stream_wrapper_unregister('php');
+        }
+        stream_wrapper_register('php', '\EasyPayTest\MockPHPStream');
+
+        $_SERVER['REMOTE_ADDR'] = '1.2.3.4';
+
+        parent::SetUp();
+    }
+
+    public function TearDown()
+    {
+        stream_wrapper_restore('php');
+
+        parent::TearDown();
+    }
+
+    public function test_Account()
+    {
+        file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -29,18 +50,19 @@ class PaymentTest extends TestCase
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
+EOD
+        );
+        $r = new Payment(new RAW());
 
-                $this->assertEquals(
-                    $r->Account(),
-                    '64229400128'
-                );
-        }
+        $this->assertEquals(
+            $r->Account(),
+            '64229400128'
+        );
+    }
 
         public function test_OrderId()
         {
-                $raw =<<<EOD
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -51,18 +73,19 @@ EOD;
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
+EOD
+            );
+            $r = new Payment(new RAW());
 
-                $this->assertEquals(
-                    $r->OrderId(),
-                    '17212'
-                );
+            $this->assertEquals(
+                $r->OrderId(),
+                '17212'
+            );
         }
 
         public function test_Amount()
         {
-                $raw =<<<EOD
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -73,13 +96,14 @@ EOD;
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
+EOD
+            );
+            $r = new Payment(new RAW());
 
-                $this->assertEquals(
-                    $r->Amount(),
-                    '25'
-                );
+            $this->assertEquals(
+                $r->Amount(),
+                '25'
+            );
         }
 
         /**
@@ -89,10 +113,10 @@ EOD;
          */
         public function test_validate_request_noAccount()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -102,9 +126,10 @@ EOD;
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         /**
@@ -114,10 +139,10 @@ EOD;
          */
         public function test_validate_request_twoAccount()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -129,9 +154,10 @@ EOD;
     <Account>29400728</Account>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         /**
@@ -141,10 +167,10 @@ EOD;
          */
         public function test_validate_request_noOrderId()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -154,9 +180,10 @@ EOD;
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         /**
@@ -166,10 +193,10 @@ EOD;
          */
         public function test_validate_request_twoOrderId()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -181,9 +208,10 @@ EOD;
     <OrderId>19321</OrderId>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         /**
@@ -193,10 +221,10 @@ EOD;
          */
         public function test_validate_request_noAmount()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -206,9 +234,10 @@ EOD;
     <Account>64229400128</Account>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         /**
@@ -218,10 +247,10 @@ EOD;
          */
         public function test_validate_request_twoAmount()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -233,17 +262,18 @@ EOD;
     <Amount>32</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 
         public function test_validate_request()
         {
-                $options = array(
-                        'ServiceId' => 127
-                );
-                $raw =<<<EOD
+            $options = array(
+                    'ServiceId' => 127
+            );
+            file_put_contents('php://input', <<<EOD
 <Request>
   <DateTime>2017-10-01T11:11:11</DateTime>
   <Sign></Sign>
@@ -254,8 +284,9 @@ EOD;
     <Amount>25</Amount>
   </Payment>
 </Request>
-EOD;
-                $r = new Payment($raw);
-                $r->validate_request($options);
+EOD
+            );
+            $r = new Payment(new RAW());
+            $r->validate_request($options);
         }
 }

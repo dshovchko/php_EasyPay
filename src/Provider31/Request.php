@@ -23,7 +23,8 @@ final class Request
      */
     public static function get()
     {
-        $raw = self::get_http_raw_post_data();
+        //$raw = self::get_http_raw_post_data();
+        $raw = new Request\RAW();
 
         $r = new Request\General($raw);
 
@@ -59,7 +60,7 @@ final class Request
      *      @return string Http raw post data
      *
      */
-    private static function get_http_raw_post_data()
+    /*private static function get_http_raw_post_data()
     {
         Log::instance()->add('request from ' . $_SERVER['REMOTE_ADDR']);
 
@@ -70,5 +71,5 @@ final class Request
         Log::instance()->debug(' ');
 
         return $raw_request;
-    }
+    }*/
 }

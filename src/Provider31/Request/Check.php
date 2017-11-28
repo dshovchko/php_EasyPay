@@ -49,7 +49,7 @@ class Check extends General
     {
         parent::parse_request_data();
 
-        $r = $this->get_nodes_from_request('Check');
+        $r = $this->raw_request->get_nodes_from_request('Check');
 
         foreach ($r[0]->childNodes as $child)
         {

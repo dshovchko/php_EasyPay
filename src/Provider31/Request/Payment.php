@@ -79,7 +79,7 @@ class Payment extends General
     {
         parent::parse_request_data();
 
-        $r = $this->get_nodes_from_request('Payment');
+        $r = $this->raw_request->get_nodes_from_request('Payment');
 
         foreach ($r[0]->childNodes as $child)
         {

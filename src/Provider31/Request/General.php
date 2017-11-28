@@ -13,13 +13,14 @@ namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
 use EasyPay\Exception;
+use EasyPay\Provider31\Request\RAW as RAW;
 use EasyPay\Key as Key;
 use EasyPay\OpenSSL as OpenSSL;
 
 class General
 {
     /**
-     *      @var string raw request
+     *      @var EasyPay\Provider31\Request\RAW raw request
      */
     protected $raw_request;
 
@@ -51,11 +52,11 @@ class General
     /**
      *      General constructor
      *
-     *      @param string $raw Raw request data
+     *      @param EasyPay\Provider31\Request\RAW $raw Raw request data
      */
     public function __construct($raw)
     {
-        $this->raw_request = strval($raw);
+        $this->raw_request = $raw;
 
         $this->parse_request_data();
     }
@@ -107,10 +108,8 @@ class General
      */
     protected function parse_request_data()
     {
-        $this->check_presence_request();
-
         // process <Request> group
-        $r = $this->get_nodes_from_request('Request');
+        $r = $this->raw_request->get_nodes_from_request('Request');
 
         if (count($r) < 1)
         {
@@ -141,46 +140,12 @@ class General
         }
 
         // process <Operation> group
-        $r = $this->get_nodes_from_request($this->Operation);
+        $r = $this->raw_request->get_nodes_from_request($this->Operation);
 
         foreach ($r[0]->childNodes as $child)
         {
             $this->check_and_parse_request_node($child, 'ServiceId');
         }
-    }
-
-    /**
-     *      Check if presence request
-     *
-     *      @throws Exception\Structure
-     */
-    protected function check_presence_request()
-    {
-        if (empty($this->raw_request))
-        {
-            throw new Exception\Structure('An empty xml request', -50);
-        }
-    }
-
-    /**
-     *      Get group of nodes from XML-request
-     *
-     *      @param string $name
-     *      @return array
-     */
-    protected function get_nodes_from_request($name)
-    {
-        libxml_use_internal_errors(true);
-        $doc = new \DOMDocument();
-        if ( ! $doc->loadXML($this->raw_request))
-        {
-            foreach(libxml_get_errors() as $e){
-                Log::instance()->error($e->message);
-            }
-            throw new Exception\Structure('The wrong XML is received', -51);
-        }
-
-        return $this->getNodes($doc, $name);
     }
 
     /**
@@ -261,7 +226,7 @@ class General
         {
             $this->check_verify_sign_result(
                 $result = (new OpenSSL())->verify(
-                    str_replace($this->Sign, '', $this->raw_request),
+                    str_replace($this->Sign, '', $this->raw_request->str()),
                     pack("H*", $this->Sign),
                     (new OpenSSL())->get_pub_key($this->get_pub_key($options))
                 )
@@ -302,35 +267,6 @@ class General
         {
             throw new Exception\Sign('Signature of request is incorrect!', -95);
         }
-    }
-
-    /**
-     *      Selects nodes by name
-     *
-     *      @param \DOMDocument $dom
-     *      @param string $name
-     *      @param array $ret
-     *
-     *      @return array nodes with the name
-     */
-    protected function getNodes($dom, $name, $ret=array())
-    {
-        foreach($dom->childNodes as $child)
-        {
-            if ($child->nodeName == $name)
-            {
-                array_push($ret, $child);
-            }
-            else
-            {
-                if (count($child->childNodes) > 0)
-                {
-                    $ret = $this->getNodes($child, $name, $ret);
-                }
-            }
-        }
-
-        return $ret;
     }
 
 }
