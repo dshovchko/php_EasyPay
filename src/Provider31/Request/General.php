@@ -120,17 +120,7 @@ class General
             $this->check_and_parse_request_node($child, 'DateTime');
             $this->check_and_parse_request_node($child, 'Sign');
 
-            if (in_array($child->nodeName, $this->operations))
-            {
-                if ( ! isset($this->Operation))
-                {
-                    $this->Operation = $child->nodeName;
-                }
-                else
-                {
-                    throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
-                }
-            }
+            $this->check_and_parse_operation($child);
         }
 
         if ( ! isset($this->Operation))
@@ -158,6 +148,26 @@ class General
         if ($n->nodeName == $name)
         {
             $this->parse_request_node($n, $name);
+        }
+    }
+
+    /**
+     *      Check if given node is Operation
+     *
+     *      @throws Exception\Structure
+     */
+    protected function check_and_parse_operation($n)
+    {
+        if (in_array($n->nodeName, $this->operations))
+        {
+            if ( ! isset($this->Operation))
+            {
+                $this->Operation = $n->nodeName;
+            }
+            else
+            {
+                throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
+            }
         }
     }
 
