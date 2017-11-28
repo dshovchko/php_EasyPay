@@ -12,8 +12,7 @@
 namespace EasyPay\Provider31;
 
 use EasyPay\Log as Log;
-use EasyPay\Key as Key;
-use EasyPay\OpenSSL as OpenSSL;
+use EasyPay\Sign as Sign;
 
 abstract class Response extends \DomDocument
 {
@@ -144,67 +143,7 @@ abstract class Response extends \DomDocument
             $this->Sign = $this->createElement('Sign');
             $this->Response->appendChild($this->Sign);
 
-            $sign = $this->generate_sign($options);
-
-            $this->Sign->nodeValue = $sign;
-        }
-    }
-
-    /**
-     *      Generate signature of response
-     *
-     *      @param array $options
-     *      @return string
-     */
-    public function generate_sign($options)
-    {
-        try
-        {
-            $sign = '';
-            $this->check_sign_result(
-                $result = (new OpenSSL())->sign(
-                    $this->friendly(),
-                    $sign,
-                    (new OpenSSL())->get_priv_key($this->get_priv_key($options))
-                )
-            );
-
-            return strtoupper(bin2hex($sign));
-        }
-        catch (\Exception $e)
-        {
-            return null;
-        }
-    }
-
-    /**
-     *      load file with provider private key
-     *
-     *      @param array $options
-     *      @throws Exception\Runtime
-     *      @return string
-     */
-    protected function get_priv_key($options)
-    {
-        if ( ! isset($options['ProviderPKey']))
-        {
-            throw new \EasyPay\Exception\Runtime('The parameter ProviderPKey is not set!', -94);
-        }
-
-        return (new Key())->get($options['ProviderPKey'], 'private');
-    }
-
-    /**
-     *      check result of openssl sign
-     *
-     *      @param bool $result
-     *      @throws Exception\Sign
-     */
-    protected function check_sign_result($result)
-    {
-        if ($result === FALSE)
-        {
-            throw new \EasyPay\Exception\Sign('Can not generate signature!', -96);
+            $this->Sign->nodeValue = (new Sign())->generate($this->friendly(), $options);
         }
     }
 }

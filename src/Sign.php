@@ -14,6 +14,8 @@ class Sign
     /**
      *      Verify signature of request
      *
+     *      @param string $request_str
+     *      @param string $sign
      *      @param array $options
      */
     public function verify($request_str, $sign, $options)
@@ -62,6 +64,65 @@ class Sign
         elseif ($result == 0)
         {
             throw new Exception\Sign('Signature of request is incorrect!', -95);
+        }
+    }
+
+    /**
+     *      Generate signature of response
+     *
+     *      @param string $request_str
+     *      @param array $options
+     *      @return string
+     */
+    public function generate($request_str, $options)
+    {
+        try
+        {
+            $sign = '';
+            $this->check_generate_sign_result(
+                $result = (new OpenSSL())->sign(
+                    $request_str,
+                    $sign,
+                    (new OpenSSL())->get_priv_key($this->get_priv_key($options))
+                )
+            );
+
+            return strtoupper(bin2hex($sign));
+        }
+        catch (\Exception $e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     *      load file with provider private key
+     *
+     *      @param array $options
+     *      @throws Exception\Runtime
+     *      @return string
+     */
+    protected function get_priv_key($options)
+    {
+        if ( ! isset($options['ProviderPKey']))
+        {
+            throw new \EasyPay\Exception\Runtime('The parameter ProviderPKey is not set!', -94);
+        }
+
+        return (new Key())->get($options['ProviderPKey'], 'private');
+    }
+
+    /**
+     *      check result of openssl sign
+     *
+     *      @param bool $result
+     *      @throws Exception\Sign
+     */
+    protected function check_generate_sign_result($result)
+    {
+        if ($result === FALSE)
+        {
+            throw new \EasyPay\Exception\Sign('Can not generate signature!', -96);
         }
     }
 }

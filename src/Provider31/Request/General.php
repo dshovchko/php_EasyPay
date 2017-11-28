@@ -13,6 +13,7 @@ namespace EasyPay\Provider31\Request;
 
 use EasyPay\Log as Log;
 use EasyPay\Exception;
+use EasyPay\Sign as Sign;
 use EasyPay\Provider31\Request\RAW as RAW;
 
 class General
@@ -50,7 +51,7 @@ class General
     /**
      *      General constructor
      *
-     *      @param EasyPay\Provider31\Request\RAW $raw Raw request data
+     *      @param \EasyPay\Provider31\Request\RAW $raw Raw request data
      */
     public function __construct($raw)
     {
@@ -220,7 +221,7 @@ class General
      */
     public function verify_sign($options)
     {
-        $sign = new \EasyPay\Sign();
+        $sign = new Sign();
         $sign->verify(
             $this->raw_request->str(),
             $this->Sign,

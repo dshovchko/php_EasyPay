@@ -321,4 +321,111 @@ EOD;
             $this->invokeMethod($s, 'check_verify_sign_result', array(-1));
         }
 
+        public function test_generate_null()
+        {
+            $s = new Sign();
+
+            $xml = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime>2017-07-28T12:36:07</DateTime></Response>';
+            // without options
+            $options = array();
+            $this->assertNULL($s->generate($xml, $options));
+        }
+
+        public function test_generate_emptyPKey()
+        {
+            $s = new Sign();
+
+            $xml = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime>2017-07-28T12:36:07</DateTime></Response>';
+            $options = array(
+                'ProviderPKey' => '',
+            );
+            $this->assertNULL($s->generate($xml, $options));
+        }
+
+        public function test_generate_wrongPKey()
+        {
+            $s = new Sign();
+
+            $xml = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime>2017-07-28T12:36:07</DateTime></Response>';
+            // with wrong ProviderPKey
+            $options = array(
+                'ProviderPKey' => '/foobaz.key',
+            );
+            $this->assertNULL($s->generate($xml, $options));
+        }
+
+        public function test_generate_ok()
+        {
+            $s = new Sign();
+
+            $xml = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime>2017-07-28T12:36:07</DateTime></Response>';
+            // with right ProviderPKey
+            $options = array(
+                'ProviderPKey' => dirname(__FILE__).'/files/php_easypay.ppk',
+            );
+            $this->assertEquals(
+                '6F27518C3348B06CF06B722B873413D332C74E70E7F6B76808BB4E42E2B95E2B4422EA2DE68D9E731B97192C1405F23141DCF78E37EEA7362D16A5AD6207241C36F9E1DCAA49AB4E6A3686EC6C154AFEF69651BB149827374168DA24EA6C7522BD202879E6383E89D27D7CFA036D9282E6FC63345063C46747094386D1E639FF',
+                $s->generate($xml, $options)
+            );
+        }
+
+        public function test_generate_with_bad_key()
+        {
+            $s = new Sign();
+
+            $xml = '<Response><StatusCode></StatusCode><StatusDetail></StatusDetail><DateTime>2017-07-28T12:36:07</DateTime></Response>';
+
+            $options = array(
+                'ProviderPKey' => dirname(__FILE__).'/files/php_easypay_corrupted.cer',
+            );
+            $this->assertNULL($s->generate($xml, $options));
+        }
+
+        public function test_get_priv_key()
+        {
+            $s = new Sign();
+
+            $options = array(
+                'ProviderPKey' => dirname(__FILE__).'/files/php_easypay.ppk',
+            );
+            $this->assertEquals(
+                file_get_contents(dirname(__FILE__).'/files/php_easypay.ppk'),
+                $this->invokeMethod($s, 'get_priv_key', array($options))
+            );
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Runtime
+         * @expectedExceptionCode -94
+         * @expectedExceptionMessage The parameter ProviderPKey is not set!
+         */
+        public function test_get_priv_key_exception()
+        {
+            $s = new Sign();
+
+            $options = array();
+            $this->assertEquals(
+                file_get_contents(dirname(__FILE__).'/files/php_easypay.ppk'),
+                $this->invokeMethod($s, 'get_priv_key', array($options))
+            );
+        }
+
+        public function test_check_generate_sign_result()
+        {
+            $s = new Sign();
+
+            $this->invokeMethod($s, 'check_generate_sign_result', array(true));
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Sign
+         * @expectedExceptionCode -96
+         * @expectedExceptionMessage Can not generate signature!
+         */
+        public function test_check_generate_sign_result_exception()
+        {
+            $s = new Sign();
+
+            $this->invokeMethod($s, 'check_generate_sign_result', array(false));
+        }
 }
