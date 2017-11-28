@@ -122,11 +122,7 @@ class General
 
             $this->check_and_parse_operation($child);
         }
-
-        if ( ! isset($this->Operation))
-        {
-            throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
-        }
+        $this->check_presence_operation();
 
         // process <Operation> group
         $r = $this->raw_request->get_nodes_from_request($this->Operation);
@@ -168,6 +164,19 @@ class General
             {
                 throw new Exception\Structure('There is more than one Operation type element in the xml-query!', -53);
             }
+        }
+    }
+
+    /**
+     *      Check if Operation present in request
+     *
+     *      @throws Exception\Structure
+     */
+    protected function check_presence_operation()
+    {
+        if ( ! isset($this->Operation))
+        {
+            throw new Exception\Structure('There is no Operation type element in the xml request!', -55);
         }
     }
 
