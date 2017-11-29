@@ -101,8 +101,6 @@ class Provider31
     /**
      *      method to create a specific class of request
      *
-     *      @return Request\General Request class of the appropriate type
-     *      @throws \EasyPay\Exception\Structure
      */
     protected function get_request()
     {
@@ -115,35 +113,14 @@ class Provider31
     }
 
     /**
-     *      Process request and generate response
+     *      generate response
      *
-     *      @throws Exception\Structure
+     *      @return mixed
      */
     protected function get_response()
     {
-        switch ($this->request->Operation())
-        {
-            case 'Check':
-                $response = $this->response_check();
-                break;
-
-            case 'Payment':
-                $response = $this->response_payment();
-                break;
-
-            case 'Confirm':
-                $response = $this->response_confirm();
-                break;
-
-            case 'Cancel';
-                $response = $this->response_cancel();
-                break;
-
-            default:
-                throw new Exception\Structure('There is not supported value of Operation in xml-request!', -99);
-        }
-
-        return $response;
+        $m = 'response_'.$this->request->Operation();
+        return $this->$m();
     }
 
     /**
@@ -151,7 +128,7 @@ class Provider31
      *
      *      @return Provider31\Response\Check
      */
-    private function response_check()
+    private function response_Check()
     {
         Log::instance()->add(sprintf('Check("%s")', $this->request->Account()));
 
@@ -168,7 +145,7 @@ class Provider31
      *
      *      @return Provider31\Response\Payment
      */
-    private function response_payment()
+    private function response_Payment()
     {
         Log::instance()->add(sprintf('Payment("%s", "%s", "%s")', $this->request->Account(), $this->request->OrderId(), $this->request->Amount()));
 
@@ -187,7 +164,7 @@ class Provider31
      *
      *      @return Provider31\Response\Confirm
      */
-    private function response_confirm()
+    private function response_Confirm()
     {
         Log::instance()->add(sprintf('Confirm("%s")', $this->request->PaymentId()));
 
@@ -204,7 +181,7 @@ class Provider31
      *
      *      @return Provider31\Response\Cancel
      */
-    private function response_cancel()
+    private function response_Cancel()
     {
         Log::instance()->add(sprintf('Cancel("%s")', $this->request->PaymentId()));
 
