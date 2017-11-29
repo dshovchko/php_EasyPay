@@ -62,7 +62,7 @@ class Provider31
         try
         {
             //      get request
-            $this->request = Provider31\Request::get();
+            $this->request = $this->get_request();
 
             //      validate request
             $this->request->validate_request(self::$options);
@@ -96,7 +96,37 @@ class Provider31
 
         //      output response
         $this->response->sign_and_out(self::$options);
-        exit;
+    }
+
+    /**
+     *      method to create a specific class of request
+     *
+     *      @return Request\General Request class of the appropriate type
+     *      @throws \EasyPay\Exception\Structure
+     */
+    protected function get_request()
+    {
+        $raw = new Provider31\Request\RAW();
+
+        $r = new Provider31\Request\General($raw);
+
+        switch ($r->Operation())
+        {
+            case 'Check':
+                return new Provider31\Request\Check($raw);
+
+            case 'Payment':
+                return new Provider31\Request\Payment($raw);
+
+            case 'Confirm':
+                return new Provider31\Request\Confirm($raw);
+
+            case 'Cancel';
+                return new Provider31\Request\Cancel($raw);
+
+            default:
+                throw new \EasyPay\Exception\Structure('There is not supported value of Operation in xml-request!', -99);
+        }
     }
 
     /**
@@ -104,7 +134,7 @@ class Provider31
      *
      *      @throws Exception\Structure
      */
-    private function get_response()
+    protected function get_response()
     {
         switch ($this->request->Operation())
         {
