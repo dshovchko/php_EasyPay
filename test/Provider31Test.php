@@ -375,6 +375,8 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcheck());
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -389,7 +391,6 @@ EOD;
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_cancel()
@@ -401,6 +402,8 @@ EOD
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcancel());
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -413,7 +416,6 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_confirm()
@@ -425,6 +427,8 @@ EOD
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLconfirm());
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -437,7 +441,6 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_payment()
@@ -449,6 +452,8 @@ EOD
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLpayment());
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -461,12 +466,13 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_exception_structure()
     {
         $p = new StubProvider31(new \EasyPay\Exception\Structure('aaa', -54));
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -478,12 +484,13 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_exception_sign()
     {
         $p = new StubProvider31(new \EasyPay\Exception\Sign('aaa', -30));
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -495,12 +502,13 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_exception_runtime()
     {
         $p = new StubProvider31(new \EasyPay\Exception\Runtime('aaa', -62));
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -512,12 +520,14 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 
     public function test_process_exception()
     {
         $p = new StubProvider31(new \Exception('aaa', -99));
+
+        $p->process();
+
         $dt = date('Y-m-d\TH:i:s', time());
         $this->expectOutputString(<<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
@@ -529,6 +539,5 @@ EOD
 
 EOD
         );
-        $p->process();
     }
 }
