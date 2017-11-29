@@ -64,14 +64,6 @@ class Provider31
             //      get request
             $this->get_request();
 
-            //      validate request
-            $this->request->validate_request(self::$options);
-            Log::instance()->debug('request is valid');
-
-            //      verify sign
-            $this->request->verify_sign(self::$options);
-            Log::instance()->debug('signature of request is correct');
-
             //      get response
             $this->response = $this->get_response();
 
@@ -100,6 +92,14 @@ class Provider31
         $c = '\\EasyPay\\Provider31\\Request\\'.$r->Operation();
 
         $this->request = new $c($raw);
+
+        //      validate request
+        $this->request->validate_request(self::$options);
+        Log::instance()->debug('request is valid');
+
+        //      verify sign
+        $this->request->verify_sign(self::$options);
+        Log::instance()->debug('signature of request is correct');
     }
 
     /**
