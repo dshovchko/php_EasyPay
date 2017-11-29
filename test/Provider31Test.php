@@ -188,9 +188,11 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcheck());
+
+        $this->invokeMethod($p, 'get_request', array(null));
         $this->assertInstanceOf(
             \EasyPay\Provider31\Request\Check::class,
-            $this->invokeMethod($p, 'get_request', array(null))
+            $this->invokeProperty($p, 'request')->getValue($p)
         );
     }
 
@@ -203,9 +205,11 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLpayment());
+
+        $this->invokeMethod($p, 'get_request', array(null));
         $this->assertInstanceOf(
             \EasyPay\Provider31\Request\Payment::class,
-            $this->invokeMethod($p, 'get_request', array(null))
+            $this->invokeProperty($p, 'request')->getValue($p)
         );
     }
 
@@ -218,9 +222,11 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLconfirm());
+
+        $this->invokeMethod($p, 'get_request', array(null));
         $this->assertInstanceOf(
             \EasyPay\Provider31\Request\Confirm::class,
-            $this->invokeMethod($p, 'get_request', array(null))
+            $this->invokeProperty($p, 'request')->getValue($p)
         );
     }
 
@@ -233,9 +239,11 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcancel());
+
+        $this->invokeMethod($p, 'get_request', array(null));
         $this->assertInstanceOf(
             \EasyPay\Provider31\Request\Cancel::class,
-            $this->invokeMethod($p, 'get_request', array(null))
+            $this->invokeProperty($p, 'request')->getValue($p)
         );
     }
 
@@ -265,10 +273,8 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcheck());
-        $this->invokeProperty($p, 'request')->setValue(
-            $p,
-            $this->invokeMethod($p, 'get_request', array(null))
-        );
+        $this->invokeMethod($p, 'get_request', array(null));
+
         $this->assertInstanceOf(
             \EasyPay\Provider31\Response\Check::class,
             $this->invokeMethod($p, 'get_response', array(null))
@@ -284,10 +290,8 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLpayment());
-        $this->invokeProperty($p, 'request')->setValue(
-            $p,
-            $this->invokeMethod($p, 'get_request', array(null))
-        );
+        $this->invokeMethod($p, 'get_request', array(null));
+
         $this->assertInstanceOf(
             \EasyPay\Provider31\Response\Payment::class,
             $this->invokeMethod($p, 'get_response', array(null))
@@ -303,10 +307,8 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLconfirm());
-        $this->invokeProperty($p, 'request')->setValue(
-            $p,
-            $this->invokeMethod($p, 'get_request', array(null))
-        );
+        $this->invokeMethod($p, 'get_request', array(null));
+
         $this->assertInstanceOf(
             \EasyPay\Provider31\Response\Confirm::class,
             $this->invokeMethod($p, 'get_response', array(null))
@@ -322,10 +324,8 @@ EOD;
         $p = new Provider31($options, $cb, $log);
 
         file_put_contents('php://input', $this->XMLcancel());
-        $this->invokeProperty($p, 'request')->setValue(
-            $p,
-            $this->invokeMethod($p, 'get_request', array(null))
-        );
+        $this->invokeMethod($p, 'get_request', array(null));
+
         $this->assertInstanceOf(
             \EasyPay\Provider31\Response\Cancel::class,
             $this->invokeMethod($p, 'get_response', array(null))

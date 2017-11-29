@@ -31,12 +31,12 @@ class Provider31
     /**
      *      @var mixed
      */
-    private $request;
+    protected $request;
 
     /**
      *      @var Provider31\Response
      */
-    private $response;
+    protected $response;
 
     /**
      *      Provider31 constructor
@@ -62,7 +62,7 @@ class Provider31
         try
         {
             //      get request
-            $this->request = $this->get_request();
+            $this->get_request();
 
             //      validate request
             $this->request->validate_request(self::$options);
@@ -109,24 +109,9 @@ class Provider31
         $raw = new Provider31\Request\RAW();
 
         $r = new Provider31\Request\General($raw);
+        $c = '\\EasyPay\\Provider31\\Request\\'.$r->Operation();
 
-        switch ($r->Operation())
-        {
-            case 'Check':
-                return new Provider31\Request\Check($raw);
-
-            case 'Payment':
-                return new Provider31\Request\Payment($raw);
-
-            case 'Confirm':
-                return new Provider31\Request\Confirm($raw);
-
-            case 'Cancel';
-                return new Provider31\Request\Cancel($raw);
-
-            default:
-                throw new \EasyPay\Exception\Structure('There is not supported value of Operation in xml-request!', -99);
-        }
+        $this->request = new $c($raw);
     }
 
     /**
