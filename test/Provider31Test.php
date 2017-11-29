@@ -362,7 +362,7 @@ EOD;
 
         $this->assertInstanceOf(
             \EasyPay\Provider31\Response\ErrorInfo::class,
-            $this->invokeMethod($p, 'get_error_response', array('1234', 'Error response message'))
+            $this->invokeMethod($p, 'get_error_response', array(new \Exception('aaa', -45)))
         );
     }
 

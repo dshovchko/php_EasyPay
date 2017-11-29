@@ -77,21 +77,11 @@ class Provider31
 
             Log::instance()->add('the request was processed successfully');
         }
-        catch (Exception\Structure $e)
-        {
-            $this->response = $this->get_error_response($e->getCode(), 'Error in request');
-        }
-        catch (Exception\Sign $e)
-        {
-            $this->response = $this->get_error_response($e->getCode(), 'Signature error!');
-        }
-        catch (Exception\Runtime $e)
-        {
-            $this->response = $this->get_error_response($e->getCode(), 'Error while processing request');
-        }
         catch (\Exception $e)
         {
-            $this->response = $this->get_error_response($e->getCode(), $e->getMessage());
+            $this->response = $this->get_error_response($e);
+
+            Log::instance()->add('the request was processed with an error');
         }
 
         //      output response
@@ -196,16 +186,28 @@ class Provider31
     /**
      *      Generates an xml with an error message
      *
-     *      @param integer $code
-     *      @param string $message
+     *      @param mixed $e
      *
      *      @return Provider31\Response\ErrorInfo
      */
-    private function get_error_response($code, $message)
+    private function get_error_response($e)
     {
-        Log::instance()->add('the request was processed with an error');
+        $message = $e->getMessage();
+
+        if ($e instanceof Exception\Structure)
+        {
+            $message = 'Error in request';
+        }
+        elseif ($e instanceof Exception\Sign)
+        {
+            $message = 'Signature error!';
+        }
+        elseif ($e instanceof Exception\Runtime)
+        {
+            $message = 'Error while processing request';
+        }
 
         // Sending a response
-        return new Provider31\Response\ErrorInfo($code, $message);
+        return new Provider31\Response\ErrorInfo($e->getCode(), $message);
     }
 }
