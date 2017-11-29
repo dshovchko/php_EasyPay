@@ -206,6 +206,46 @@ EOD;
             );
         }
 
+        public function test_check_request_count()
+        {
+            file_put_contents('php://input', $this->XMLcheck());
+            $r = new General(new RAW());
+
+            $ar = array(1);
+
+            $this->invokeMethod($r, 'check_request_count', array($ar));
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Structure
+         * @expectedExceptionCode -52
+         * @expectedExceptionMessage The xml-query does not contain any element Request!
+         */
+        public function test_check_request_count_exception1()
+        {
+            file_put_contents('php://input', $this->XMLcheck());
+            $r = new General(new RAW());
+
+            $ar = array();
+
+            $this->invokeMethod($r, 'check_request_count', array($ar));
+        }
+
+        /**
+         * @expectedException EasyPay\Exception\Structure
+         * @expectedExceptionCode -52
+         * @expectedExceptionMessage The xml-query contains several elements Request!
+         */
+        public function test_check_request_count_exception2()
+        {
+            file_put_contents('php://input', $this->XMLcheck());
+            $r = new General(new RAW());
+
+            $ar = array(1,2,3);
+
+            $this->invokeMethod($r, 'check_request_count', array($ar));
+        }
+
         /**
          * @expectedException EasyPay\Exception\Structure
          * @expectedExceptionCode -52

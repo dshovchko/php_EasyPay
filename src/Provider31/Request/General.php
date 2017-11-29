@@ -102,18 +102,13 @@ class General
 
     /**
      *      Parse xml-request, which was previously "extracted" from the body of the http request
-     *
-     *      @throws Exception\Structure
+     *      processes contents of <Request> node
      */
     protected function parse_request_data()
     {
-        // process <Request> group
-        $r = $this->raw_request->get_nodes_from_request('Request');
-
-        if (count($r) < 1)
-        {
-            throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
-        }
+        $r = $this->check_request_count(
+            $this->raw_request->get_nodes_from_request('Request')
+        );
 
         foreach ($r[0]->childNodes as $child)
         {
@@ -122,9 +117,38 @@ class General
 
             $this->check_and_parse_operation($child);
         }
+        $this->parse_operation_data();
+    }
+
+    /**
+     *      Check count of <Request> nodes in xml-request
+     *
+     *      @throws Exception\Structure
+     */
+    protected function check_request_count($ar)
+    {
+        if (count($ar) < 1)
+        {
+            throw new Exception\Structure('The xml-query does not contain any element Request!', -52);
+        }
+        elseif (count($ar) > 1)
+        {
+            throw new Exception\Structure('The xml-query contains several elements Request!', -52);
+        }
+
+        return $ar;
+    }
+
+    /**
+     *      Parse xml-request, which was previously "extracted" from the body of the http request
+     *      processes contents of <Operation> node
+     *
+     *      @throws Exception\Structure
+     */
+    protected function parse_operation_data()
+    {
         $this->check_presence_operation();
 
-        // process <Operation> group
         $r = $this->raw_request->get_nodes_from_request($this->Operation);
 
         foreach ($r[0]->childNodes as $child)
