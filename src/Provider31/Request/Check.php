@@ -24,7 +24,7 @@ class Check extends General
     /**
      *      Check constructor
      *
-     *      @param string $raw Raw request data
+     *      @param \EasyPay\Provider31\Request\RAW $raw Raw request data
      */
     public function __construct($raw)
     {

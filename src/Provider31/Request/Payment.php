@@ -34,7 +34,7 @@ class Payment extends General
     /**
      *      Payment constructor
      *
-     *      @param string $raw Raw request data
+     *      @param \EasyPay\Provider31\Request\RAW $raw Raw request data
      */
     public function __construct($raw)
     {

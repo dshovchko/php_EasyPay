@@ -19,7 +19,7 @@ use EasyPay\Provider31\Request\RAW as RAW;
 class General
 {
     /**
-     *      @var EasyPay\Provider31\Request\RAW raw request
+     *      @var \EasyPay\Provider31\Request\RAW raw request
      */
     protected $raw_request;
 
